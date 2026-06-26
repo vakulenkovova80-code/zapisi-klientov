@@ -47,4 +47,18 @@ describe('appointments CRUD', () => {
     await deleteAppointment(id)
     expect(await getAppointment(id)).toBeUndefined()
   })
+  it('частичное обновление сохраняет остальные поля', async () => {
+    const id = await addAppointment(base({ note: 'важно' }))
+    await updateAppointment(id, { price: 2000 })
+    const a = await getAppointment(id)
+    expect(a.price).toBe(2000)
+    expect(a.clientName).toBe('Аня')
+    expect(a.note).toBe('важно')
+    expect(a.serviceName).toBe('Макияж')
+  })
+  it('updateAppointment приводит строковую цену к числу', async () => {
+    const id = await addAppointment(base())
+    await updateAppointment(id, { price: '2500' })
+    expect((await getAppointment(id)).price).toBe(2500)
+  })
 })

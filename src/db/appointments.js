@@ -1,6 +1,7 @@
 import { getDB } from './db.js'
 
 function normalize(data) {
+  if (!data.datetime) throw new Error('datetime обязателен')
   return {
     clientId: data.clientId ?? null,
     clientName: data.clientName ?? '',
@@ -29,7 +30,9 @@ export async function updateAppointment(id, patch) {
   const db = await getDB()
   const existing = await db.get('appointments', id)
   if (!existing) return
-  await db.put('appointments', { ...existing, ...patch, id })
+  const merged = { ...existing, ...patch, id }
+  if ('price' in patch) merged.price = Number(patch.price) || 0
+  await db.put('appointments', merged)
 }
 
 export async function deleteAppointment(id) {
