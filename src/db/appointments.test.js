@@ -77,4 +77,25 @@ describe('appointments CRUD', () => {
     await updateAppointment(id, { durationMinutes: '120' })
     expect((await getAppointment(id)).durationMinutes).toBe(120)
   })
+
+  it('дефолтный статус planned', async () => {
+    const id = await addAppointment(base())
+    const a = await getAppointment(id)
+    expect(a.status).toBe('planned')
+  })
+
+  it('сохраняет переданный статус', async () => {
+    const id = await addAppointment(base({ status: 'confirmed' }))
+    const a = await getAppointment(id)
+    expect(a.status).toBe('confirmed')
+  })
+
+  it('updateAppointment обновляет статус, сохраняя остальные поля', async () => {
+    const id = await addAppointment(base({ note: 'важно' }))
+    await updateAppointment(id, { status: 'came' })
+    const a = await getAppointment(id)
+    expect(a.status).toBe('came')
+    expect(a.clientName).toBe('Аня')
+    expect(a.note).toBe('важно')
+  })
 })

@@ -11,7 +11,8 @@ function normalize(data) {
     price: Number(data.price) || 0,
     durationMinutes: Number(data.durationMinutes) || 60,
     note: data.note ?? '',
-    photos: data.photos ?? []
+    photos: data.photos ?? [],
+    status: data.status || 'planned'
   }
 }
 
