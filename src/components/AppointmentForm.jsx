@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { addAppointment, getAppointment, updateAppointment } from '../db/appointments.js'
 import { listServices } from '../db/services.js'
 import { listClients, addClient } from '../db/clients.js'
@@ -49,17 +49,19 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
 
   const save = async () => {
     if (!clientName.trim()) { alert('Введите имя клиента'); return }
-    let clientId = null
     if (id) {
       await updateAppointment(id, buildData())
     } else {
       const clients = await listClients()
       const existing = clients.find(c => c.name.toLowerCase() === clientName.trim().toLowerCase())
-      clientId = existing ? existing.id : await addClient({ name: clientName.trim(), contact })
+      const clientId = existing ? existing.id : await addClient({ name: clientName.trim(), contact })
       await addAppointment({ ...buildData(), clientId })
     }
     onSaved()
   }
+
+  const photoUrls = useMemo(() => photos.map(p => URL.createObjectURL(p)), [photos])
+  useEffect(() => () => { photoUrls.forEach(u => URL.revokeObjectURL(u)) }, [photoUrls])
 
   const addToCalendar = () => {
     const ics = buildICS({
@@ -105,7 +107,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
         </label>
         {photos.length > 0 && (
           <div className="photo-row">
-            {photos.map((p, i) => <img key={i} src={URL.createObjectURL(p)} alt="" />)}
+            {photoUrls.map((u, i) => <img key={i} src={u} alt="" />)}
           </div>
         )}
 
