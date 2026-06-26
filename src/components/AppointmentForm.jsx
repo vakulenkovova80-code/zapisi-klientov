@@ -103,7 +103,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
             {services.map(s => <option key={s.id} value={s.name} />)}
           </datalist>
         </label>
-        <label>Цена, ₽
+        <label>Цена, zł
           <input type="number" inputMode="numeric" value={price} onChange={e => setPrice(e.target.value)} />
         </label>
         <label>Длительность, мин

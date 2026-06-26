@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { formatPrice, formatTime, formatDate, formatDayTitle, toDayKey } from './format.js'
 
 describe('format', () => {
-  it('форматирует цену в рублях', () => {
-    expect(formatPrice(1500)).toBe('1 500 ₽')
-    expect(formatPrice(0)).toBe('0 ₽')
+  it('форматирует цену в злотых', () => {
+    expect(formatPrice(1500)).toBe('1 500 zł')
+    expect(formatPrice(0)).toBe('0 zł')
   })
   it('форматирует время ЧЧ:ММ', () => {
     expect(formatTime('2026-06-26T14:30:00')).toBe('14:30')
