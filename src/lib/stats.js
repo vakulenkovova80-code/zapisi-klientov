@@ -1,32 +1,20 @@
 /**
- * Возвращает ISO-строку начала локального дня (00:00:00) для заданной даты.
+ * Возвращает Date начала локального дня (00:00:00) для заданной даты.
  */
 function startOfDay(d) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate())
 }
 
 /**
- * Форматирует Date в локальную ISO-строку YYYY-MM-DDTHH:MM:SS (без Z).
- */
-function toLocalISO(d) {
-  const yyyy = d.getFullYear()
-  const mm   = String(d.getMonth() + 1).padStart(2, '0')
-  const dd   = String(d.getDate()).padStart(2, '0')
-  const hh   = String(d.getHours()).padStart(2, '0')
-  const min  = String(d.getMinutes()).padStart(2, '0')
-  const ss   = String(d.getSeconds()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`
-}
-
-/**
- * from включительно, to эксклюзивно (начало следующего периода).
+ * Границы возвращаются как UTC-ISO (.toISOString(), с 'Z') момента ЛОКАЛЬНОЙ
+ * границы — чтобы строковое сравнение было консистентно с datetime записей в БД,
+ * которые хранятся как UTC-ISO ('...Z'). from включительно, to эксклюзивно.
  */
 export function todayRange() {
-  const now  = new Date()
-  const from = startOfDay(now)
+  const from = startOfDay(new Date())
   const to   = new Date(from)
   to.setDate(to.getDate() + 1)
-  return { from: toLocalISO(from), to: toLocalISO(to) }
+  return { from: from.toISOString(), to: to.toISOString() }
 }
 
 export function weekRange() {
@@ -37,14 +25,14 @@ export function weekRange() {
   monday.setDate(monday.getDate() + offset)
   const nextMon = new Date(monday)
   nextMon.setDate(nextMon.getDate() + 7)
-  return { from: toLocalISO(monday), to: toLocalISO(nextMon) }
+  return { from: monday.toISOString(), to: nextMon.toISOString() }
 }
 
 export function monthRange() {
   const now  = new Date()
   const from = new Date(now.getFullYear(), now.getMonth(), 1)
   const to   = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-  return { from: toLocalISO(from), to: toLocalISO(to) }
+  return { from: from.toISOString(), to: to.toISOString() }
 }
 
 /**

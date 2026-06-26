@@ -7,73 +7,83 @@ function appt(datetime, price, status, serviceName = 'Макияж') {
 }
 
 describe('todayRange / weekRange / monthRange', () => {
-  it('todayRange: from < to, оба ISO-строки', () => {
+  it('todayRange: from < to, обе строки UTC-ISO (на Z)', () => {
     const { from, to } = todayRange()
-    expect(typeof from).toBe('string')
-    expect(typeof to).toBe('string')
+    expect(from.endsWith('Z')).toBe(true)
+    expect(to.endsWith('Z')).toBe(true)
     expect(new Date(from) < new Date(to)).toBe(true)
   })
 
-  it('weekRange: from < to, оба ISO-строки', () => {
+  it('weekRange: from < to, обе строки UTC-ISO (на Z)', () => {
     const { from, to } = weekRange()
-    expect(typeof from).toBe('string')
-    expect(typeof to).toBe('string')
+    expect(from.endsWith('Z')).toBe(true)
+    expect(to.endsWith('Z')).toBe(true)
     expect(new Date(from) < new Date(to)).toBe(true)
   })
 
-  it('monthRange: from < to, оба ISO-строки', () => {
+  it('monthRange: from < to, обе строки UTC-ISO (на Z)', () => {
     const { from, to } = monthRange()
-    expect(typeof from).toBe('string')
-    expect(typeof to).toBe('string')
+    expect(from.endsWith('Z')).toBe(true)
+    expect(to.endsWith('Z')).toBe(true)
     expect(new Date(from) < new Date(to)).toBe(true)
   })
 
-  it('todayRange охватывает ровно один день', () => {
+  it('todayRange покрывает текущий момент: from <= now < to', () => {
     const { from, to } = todayRange()
-    const diff = new Date(to) - new Date(from)
-    // 24 часа = 86400000 мс
-    expect(diff).toBe(86400000)
+    const now = Date.now()
+    expect(new Date(from).getTime()).toBeLessThanOrEqual(now)
+    expect(now).toBeLessThan(new Date(to).getTime())
   })
 
-  it('weekRange охватывает 7 дней', () => {
+  it('weekRange покрывает текущий момент: from <= now < to', () => {
     const { from, to } = weekRange()
-    const diff = new Date(to) - new Date(from)
-    expect(diff).toBe(7 * 86400000)
+    const now = Date.now()
+    expect(new Date(from).getTime()).toBeLessThanOrEqual(now)
+    expect(now).toBeLessThan(new Date(to).getTime())
   })
 
-  it('weekRange.from — понедельник (день=1)', () => {
+  it('monthRange покрывает текущий момент: from <= now < to', () => {
+    const { from, to } = monthRange()
+    const now = Date.now()
+    expect(new Date(from).getTime()).toBeLessThanOrEqual(now)
+    expect(now).toBeLessThan(new Date(to).getTime())
+  })
+
+  it('weekRange.from — локальный понедельник (getDay()===1)', () => {
     const { from } = weekRange()
-    const d = new Date(from)
-    expect(d.getDay()).toBe(1)
+    // from — UTC-ISO момента локального пн 00:00 → локальный день этого момента = пн
+    expect(new Date(from).getDay()).toBe(1)
   })
 })
 
 describe('sumIncome', () => {
-  const range = { from: '2026-06-01T00:00:00', to: '2026-07-01T00:00:00' }
+  // range и datetime записей в UTC-ISO ('...Z') — как хранится в реальной БД
+  const range = { from: '2026-06-01T00:00:00.000Z', to: '2026-07-01T00:00:00.000Z' }
 
   it('суммирует только записи со статусом came в диапазоне', () => {
     const appts = [
-      appt('2026-06-10T10:00:00', 1000, 'came'),
-      appt('2026-06-15T10:00:00', 500,  'came'),
-      appt('2026-06-20T10:00:00', 800,  'planned'),  // статус не тот — не считаем
+      appt('2026-06-10T10:00:00.000Z', 1000, 'came'),
+      appt('2026-06-15T10:00:00.000Z', 500,  'came'),
+      appt('2026-06-20T10:00:00.000Z', 800,  'planned'),  // статус не тот — не считаем
     ]
     expect(sumIncome(appts, range)).toBe(1500)
   })
 
-  it('не считает запись вне диапазона', () => {
+  it('from включительно, to эксклюзивно; вне диапазона не считается', () => {
     const appts = [
-      appt('2026-05-31T23:59:59', 1000, 'came'),  // до from
-      appt('2026-07-01T00:00:00', 500,  'came'),  // равно to — эксклюзивно, не считаем
-      appt('2026-06-10T10:00:00', 200,  'came'),  // в диапазоне
+      appt('2026-05-31T23:59:59.000Z', 1000, 'came'),  // до from
+      appt('2026-06-01T00:00:00.000Z', 50,   'came'),  // = from, включается
+      appt('2026-07-01T00:00:00.000Z', 500,  'came'),  // = to, эксклюзивно — не считаем
+      appt('2026-06-10T10:00:00.000Z', 200,  'came'),  // в диапазоне
     ]
-    expect(sumIncome(appts, range)).toBe(200)
+    expect(sumIncome(appts, range)).toBe(250)
   })
 
   it('поддерживает кастомный список статусов', () => {
     const appts = [
-      appt('2026-06-10T10:00:00', 300, 'came'),
-      appt('2026-06-10T11:00:00', 700, 'confirmed'),
-      appt('2026-06-10T12:00:00', 100, 'planned'),
+      appt('2026-06-10T10:00:00.000Z', 300, 'came'),
+      appt('2026-06-10T11:00:00.000Z', 700, 'confirmed'),
+      appt('2026-06-10T12:00:00.000Z', 100, 'planned'),
     ]
     expect(sumIncome(appts, range, ['came', 'confirmed'])).toBe(1000)
   })
@@ -84,31 +94,32 @@ describe('sumIncome', () => {
 
   it('нет записей подходящего статуса → 0', () => {
     const appts = [
-      appt('2026-06-10T10:00:00', 1000, 'planned'),
-      appt('2026-06-10T11:00:00', 500,  'cancelled'),
+      appt('2026-06-10T10:00:00.000Z', 1000, 'planned'),
+      appt('2026-06-10T11:00:00.000Z', 500,  'cancelled'),
     ]
     expect(sumIncome(appts, range)).toBe(0)
   })
 })
 
 describe('countInRange', () => {
-  const range = { from: '2026-06-01T00:00:00', to: '2026-07-01T00:00:00' }
+  const range = { from: '2026-06-01T00:00:00.000Z', to: '2026-07-01T00:00:00.000Z' }
 
   it('считает записи в диапазоне любого статуса', () => {
     const appts = [
-      appt('2026-06-05T10:00:00', 100, 'came'),
-      appt('2026-06-10T10:00:00', 200, 'planned'),
-      appt('2026-07-10T10:00:00', 300, 'came'),  // вне диапазона
+      appt('2026-06-05T10:00:00.000Z', 100, 'came'),
+      appt('2026-06-10T10:00:00.000Z', 200, 'planned'),
+      appt('2026-07-10T10:00:00.000Z', 300, 'came'),  // вне диапазона
     ]
     expect(countInRange(appts, range)).toBe(2)
   })
 
-  it('граница to эксклюзивна', () => {
+  it('from включительно, to эксклюзивно', () => {
     const appts = [
-      appt('2026-06-30T23:59:59', 100, 'planned'),  // включается
-      appt('2026-07-01T00:00:00', 200, 'planned'),  // = to, не включается
+      appt('2026-06-01T00:00:00.000Z', 100, 'planned'),  // = from, включается
+      appt('2026-06-30T23:59:59.000Z', 100, 'planned'),  // включается
+      appt('2026-07-01T00:00:00.000Z', 200, 'planned'),  // = to, не включается
     ]
-    expect(countInRange(appts, range)).toBe(1)
+    expect(countInRange(appts, range)).toBe(2)
   })
 
   it('пустой массив → 0', () => {
