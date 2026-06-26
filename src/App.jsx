@@ -47,6 +47,20 @@ export default function App() {
   const openClientNew = () => setOverlay({ mode: 'client-new' })
   const openClientEdit = (id) => setOverlay({ mode: 'client-edit', id })
 
+  // Повторная запись: открываем форму записи с предзаполнением из последнего визита
+  const openRebook = (client, lastAppt) => {
+    setOverlay({
+      mode: 'new',
+      prefill: {
+        clientName: client.name,
+        contact: client.contact || '',
+        clientId: client.id,
+        serviceName: lastAppt?.serviceName || '',
+        price: lastAppt?.price != null ? String(lastAppt.price) : '',
+      }
+    })
+  }
+
   return (
     <div className="app">
       {tab === 'home'      && <HomeView key={refresh} onOpen={openView} onNew={openNew} />}
@@ -58,6 +72,7 @@ export default function App() {
           onOpen={openView}
           onAddClient={openClientNew}
           onEditClient={openClientEdit}
+          onRebook={openRebook}
         />
       )}
       {tab === 'broadcast' && <BroadcastView key={refresh} />}
@@ -66,6 +81,7 @@ export default function App() {
       {overlay && (overlay.mode === 'new' || overlay.mode === 'edit') && (
         <AppointmentForm
           id={overlay.mode === 'edit' ? overlay.id : null}
+          prefill={overlay.mode === 'new' ? overlay.prefill : undefined}
           onSaved={() => { closeOverlay(); reload() }}
           onCancel={closeOverlay}
         />

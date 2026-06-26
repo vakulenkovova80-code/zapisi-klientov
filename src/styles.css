@@ -723,3 +723,110 @@ button { cursor: pointer; }
   transition: border-color .15s;
 }
 .work-hours-label input[type="time"]:focus { border-color: var(--accent); }
+
+/* ── Settings fields (single-column text/number inputs) ── */
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #c5b0b8;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.settings-field input {
+  font-size: 16px;
+  padding: 13px 14px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  min-height: 44px;
+  transition: border-color .15s;
+}
+.settings-field input:focus { border-color: var(--accent); }
+
+/* ── Tag chips ──────────────────────────────────────────── */
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.tag-chip {
+  background: rgba(232,155,180,.15);
+  color: var(--accent-dark);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Loyalty badge ──────────────────────────────────────── */
+.loyalty-badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.loyalty-badge--regular {
+  background: rgba(232,155,180,.18);
+  color: var(--accent-dark);
+}
+.loyalty-badge--discount {
+  background: #fff3cd;
+  color: #856404;
+}
+.loyalty-badge--progress {
+  background: rgba(232,155,180,.08);
+  color: #b0a0a8;
+}
+
+/* ── Client detail extras ───────────────────────────────── */
+.client-detail-row {
+  padding: 6px 4px 4px;
+}
+.client-birthday {
+  font-size: 13px;
+  color: #c5b0b8;
+  margin: 4px 4px 2px;
+  padding: 0 4px;
+}
+
+/* ── Rebook button ──────────────────────────────────────── */
+.rebook-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f4b8cd, var(--accent));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  margin: 8px 0 4px;
+  min-height: 44px;
+  transition: opacity .15s, transform .1s;
+}
+.rebook-btn:active { opacity: .8; transform: scale(.98); }
+
+/* ── Client photo gallery ───────────────────────────────── */
+.client-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 4px;
+  padding: 0 4px;
+}
+.client-gallery-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}

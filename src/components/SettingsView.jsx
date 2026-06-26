@@ -13,6 +13,11 @@ export default function SettingsView({ onChanged }) {
   const [workStart, setWorkStart] = useState('08:00')
   const [workEnd, setWorkEnd] = useState('22:00')
 
+  // Loyalty & promo settings
+  const [loyaltyEvery, setLoyaltyEvery] = useState('5')
+  const [reviewLink, setReviewLink] = useState('')
+  const [businessName, setBusinessName] = useState('Kateryna Shtander')
+
   const reload = () => listServices().then(setServices)
   useEffect(() => { reload() }, [])
   useEffect(() => {
@@ -20,6 +25,9 @@ export default function SettingsView({ onChanged }) {
       setWorkStart(wh.start)
       setWorkEnd(wh.end)
     })
+    getMeta('loyaltyEvery', 5).then(v => setLoyaltyEvery(String(v)))
+    getMeta('reviewLink', '').then(setReviewLink)
+    getMeta('businessName', 'Kateryna Shtander').then(setBusinessName)
   }, [])
 
   const onWorkStartChange = (val) => {
@@ -32,6 +40,18 @@ export default function SettingsView({ onChanged }) {
     setMeta('workHours', { start: workStart, end: val })
     onChanged && onChanged()
   }
+
+  const onLoyaltyEveryChange = (val) => {
+    setLoyaltyEvery(val)
+    const n = Number(val)
+    if (n > 0) { setMeta('loyaltyEvery', n); onChanged && onChanged() }
+  }
+
+  const onReviewLinkChange = (val) => setReviewLink(val)
+  const onReviewLinkBlur = () => { setMeta('reviewLink', reviewLink); onChanged && onChanged() }
+
+  const onBusinessNameChange = (val) => setBusinessName(val)
+  const onBusinessNameBlur = () => { setMeta('businessName', businessName); onChanged && onChanged() }
 
   const add = async () => {
     if (!name.trim()) return
@@ -112,6 +132,44 @@ export default function SettingsView({ onChanged }) {
             />
           </label>
         </div>
+      </section>
+
+      <section className="settings-block">
+        <h2 className="day-title">Лояльность и продвижение</h2>
+        <p className="hint">Настройки программы лояльности, ссылки для отзывов и названия бизнеса.</p>
+
+        <label className="settings-field">
+          Скидка каждые N визитов
+          <input
+            type="number"
+            inputMode="numeric"
+            min="1"
+            value={loyaltyEvery}
+            onChange={e => onLoyaltyEveryChange(e.target.value)}
+          />
+        </label>
+
+        <label className="settings-field">
+          Ссылка для отзывов (Instagram/Google)
+          <input
+            type="text"
+            value={reviewLink}
+            placeholder="https://..."
+            onChange={e => onReviewLinkChange(e.target.value)}
+            onBlur={onReviewLinkBlur}
+          />
+        </label>
+
+        <label className="settings-field">
+          Название бизнеса
+          <input
+            type="text"
+            value={businessName}
+            placeholder="Kateryna Shtander"
+            onChange={e => onBusinessNameChange(e.target.value)}
+            onBlur={onBusinessNameBlur}
+          />
+        </label>
       </section>
 
       <section className="settings-block">

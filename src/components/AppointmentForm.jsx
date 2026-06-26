@@ -11,12 +11,14 @@ function toLocalInput(iso) {
   return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16)
 }
 
-export default function AppointmentForm({ id, onSaved, onCancel }) {
-  const [clientName, setClientName] = useState('')
-  const [contact, setContact] = useState('')
+export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
+  const [clientName, setClientName] = useState((!id && prefill?.clientName) || '')
+  const [contact, setContact] = useState((!id && prefill?.contact) || '')
   const [datetimeLocal, setDatetimeLocal] = useState(toLocalInput(null))
-  const [serviceName, setServiceName] = useState('')
-  const [price, setPrice] = useState('')
+  const [serviceName, setServiceName] = useState((!id && prefill?.serviceName) || '')
+  const [price, setPrice] = useState(
+    (!id && prefill?.price != null && prefill.price !== '') ? String(prefill.price) : ''
+  )
   const [note, setNote] = useState('')
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [photos, setPhotos] = useState([])
