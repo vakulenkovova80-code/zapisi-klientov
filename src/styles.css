@@ -79,3 +79,13 @@ button { cursor: pointer; }
 .hist-row { width: 100%; display: flex; justify-content: space-between;
   background: #fbf5f7; border: none; border-radius: 10px; padding: 10px 12px; margin: 6px 0;
   font-size: 14px; text-align: left; }
+
+.settings-block { margin-bottom: 26px; }
+.svc-row, .svc-add { display: flex; align-items: center; gap: 10px; background: #fff;
+  border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; }
+.svc-row span { flex: 1; }
+.svc-row input, .svc-add input { width: 90px; padding: 8px; border: 1px solid #e3dadd; border-radius: 8px; font-size: 15px; }
+.svc-add input:first-child { flex: 1; width: auto; }
+.hint { color: #999; font-size: 13px; margin: 4px 0 12px; }
+.settings-block .btn-secondary { display: block; width: 100%; text-align: center; margin-bottom: 10px; }
+.file-label input { display: none; }
