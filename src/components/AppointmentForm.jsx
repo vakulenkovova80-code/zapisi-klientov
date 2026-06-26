@@ -3,6 +3,7 @@ import { addAppointment, getAppointment, updateAppointment } from '../db/appoint
 import { listServices } from '../db/services.js'
 import { listClients, addClient } from '../db/clients.js'
 import { buildICS, downloadICS } from '../lib/ics.js'
+import { STATUSES } from '../lib/statuses.js'
 
 function toLocalInput(iso) {
   const d = iso ? new Date(iso) : new Date()
@@ -19,6 +20,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
   const [note, setNote] = useState('')
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [photos, setPhotos] = useState([])
+  const [status, setStatus] = useState('planned')
   const [services, setServices] = useState([])
 
   useEffect(() => { listServices().then(setServices) }, [])
@@ -30,6 +32,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
       setDatetimeLocal(toLocalInput(a.datetime)); setServiceName(a.serviceName)
       setPrice(String(a.price)); setNote(a.note); setPhotos(a.photos || [])
       setDurationMinutes(a.durationMinutes ?? 60)
+      setStatus(a.status || 'planned')
     })
   }, [id])
 
@@ -48,7 +51,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
     datetime: new Date(datetimeLocal).toISOString(),
     serviceName, price: Number(price) || 0,
     durationMinutes: Number(durationMinutes) || 60,
-    note, photos
+    note, photos, status
   })
 
   const save = async () => {
@@ -105,6 +108,13 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
         </label>
         <label>Длительность, мин
           <input type="number" inputMode="numeric" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} min="1" />
+        </label>
+        <label>Статус
+          <select value={status} onChange={e => setStatus(e.target.value)}>
+            {STATUSES.map(s => (
+              <option key={s.key} value={s.key}>{s.label}</option>
+            ))}
+          </select>
         </label>
         <label>Заметка
           <textarea value={note} onChange={e => setNote(e.target.value)} rows={3} placeholder="Пожелания, аллергии…" />

@@ -3,7 +3,7 @@ import { listClients } from '../db/clients.js'
 import { listByClient } from '../db/appointments.js'
 import { formatDate, formatPrice } from '../lib/format.js'
 
-export default function ClientsView({ onOpen, onAddClient, onEditClient, onBroadcast }) {
+export default function ClientsView({ onOpen, onAddClient, onEditClient }) {
   const [clients, setClients] = useState([])
   const [search, setSearch] = useState('')
   const [openId, setOpenId] = useState(null)
@@ -28,7 +28,6 @@ export default function ClientsView({ onOpen, onAddClient, onEditClient, onBroad
         <h1>Клиенты</h1>
         <div className="screen-head-btns">
           <button className="btn-secondary screen-head-btn" onClick={onAddClient}>＋ Клиент</button>
-          <button className="btn-secondary screen-head-btn" onClick={onBroadcast}>✉️ Рассылка</button>
         </div>
       </header>
 
