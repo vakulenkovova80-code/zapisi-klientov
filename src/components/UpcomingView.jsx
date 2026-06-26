@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { listUpcoming } from '../db/appointments.js'
 import { formatTime, formatDayTitle, formatPrice, toDayKey } from '../lib/format.js'
+import { statusLabel, statusColor } from '../lib/statuses.js'
 
 function startOfToday() {
   const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString()
@@ -41,7 +42,15 @@ export default function UpcomingView({ onOpen, onNew }) {
                 <span className="appt-name">{a.clientName}</span>
                 <span className="appt-service">{a.serviceName}</span>
               </span>
-              <span className="appt-price">{formatPrice(a.price)}</span>
+              <span className="appt-row-right">
+                <span className="appt-price">{formatPrice(a.price)}</span>
+                <span
+                  className="status-badge"
+                  style={{ background: statusColor(a.status) + '22', color: statusColor(a.status) }}
+                >
+                  {statusLabel(a.status)}
+                </span>
+              </span>
             </button>
           ))}
         </section>
