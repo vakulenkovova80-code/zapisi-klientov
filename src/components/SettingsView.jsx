@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { listServices, addService, updateService, deleteService } from '../db/services.js'
 import { buildBackup, restoreBackup } from '../lib/backup.js'
 import { buildTextExport } from '../lib/textexport.js'
+import { fetchSeed, seedImport } from '../lib/seed.js'
 import { listAppointments } from '../db/appointments.js'
 import { getMeta, setMeta } from '../db/meta.js'
 
@@ -61,6 +62,18 @@ export default function SettingsView({ onChanged }) {
     a.download = `zapisi-spisok-${new Date().toISOString().slice(0, 10)}.txt`
     document.body.appendChild(a); a.click(); a.remove()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+
+  const loadSeed = async () => {
+    try {
+      const data = await fetchSeed()
+      const n = (data.appointments || []).length
+      if (!confirm(`Загрузить ${n} записей в приложение?`)) return
+      await seedImport(data)
+      alert('Готово! Записи загружены 💗'); onChanged && onChanged()
+    } catch {
+      alert('Не удалось загрузить записи. Проверьте интернет.')
+    }
   }
 
   const importBackup = async (e) => {
@@ -128,6 +141,12 @@ export default function SettingsView({ onChanged }) {
         </label>
         <button className="btn-secondary" onClick={exportText}>📄 Скачать список (TXT)</button>
         <p className="hint">Текстовый список всех записей (дата, имя, услуга, цена) — удобно хранить на компьютере.</p>
+      </section>
+
+      <section className="settings-block">
+        <h2 className="day-title">Стартовые записи</h2>
+        <p className="hint">Загрузить заранее подготовленные записи (из вашего списка). Уже добавленные записи не пострадают.</p>
+        <button className="btn-secondary" onClick={loadSeed}>📥 Загрузить записи</button>
       </section>
     </div>
   )

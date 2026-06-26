@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { fetchSeed, seedImport } from './lib/seed.js'
 import BottomNav from './components/BottomNav.jsx'
 import HomeView from './components/HomeView.jsx'
 import UpcomingView from './components/UpcomingView.jsx'
@@ -18,6 +19,25 @@ export default function App() {
   const [overlay, setOverlay] = useState(null)
   const [refresh, setRefresh] = useState(0)
   const reload = () => setRefresh(n => n + 1)
+
+  // Загрузка подготовленных записей по ссылке вида .../?seed=1 — в один тап.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('seed') !== '1') return
+    fetchSeed()
+      .then(data => {
+        const n = (data.appointments || []).length
+        if (window.confirm(`Загрузить ${n} записей в приложение?`)) {
+          return seedImport(data).then(() => {
+            window.history.replaceState(null, '', import.meta.env.BASE_URL)
+            window.alert('Готово! Записи загружены 💗')
+            reload()
+          })
+        }
+        window.history.replaceState(null, '', import.meta.env.BASE_URL)
+      })
+      .catch(() => window.alert('Не удалось загрузить записи. Проверьте интернет и попробуйте ещё раз.'))
+  }, [])
 
   const openNew = () => setOverlay({ mode: 'new' })
   const openView = (id) => setOverlay({ mode: 'view', id })
