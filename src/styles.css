@@ -44,12 +44,27 @@ button { cursor: pointer; }
 .nav-icon { font-size: 22px; }
 
 /* ── Screen headings ───────────────────────────────────── */
+.screen-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
 .screen-head h1 {
   font-size: 24px;
   font-weight: 700;
-  margin: 10px 0 20px;
+  margin: 10px 0;
   letter-spacing: -.015em;
   line-height: 1.2;
+}
+.screen-head-btns {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.screen-head-btn {
+  padding: 10px 14px !important;
+  font-size: 14px !important;
 }
 
 /* ── Empty states ──────────────────────────────────────── */
@@ -221,15 +236,60 @@ button { cursor: pointer; }
 .cal-cell.sel .cal-dot { background: rgba(255,255,255,.75); }
 .cal-list { margin-top: 20px; }
 
+/* ── Search field ──────────────────────────────────────── */
+.search-wrap { margin-bottom: 16px; }
+.search-input {
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 16px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  box-shadow: var(--shadow-card);
+  transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--accent); }
+
 /* ── Clients ───────────────────────────────────────────── */
 .client-block { margin-bottom: 10px; }
 .client-row {
-  width: 100%; display: flex; flex-direction: column; align-items: flex-start;
-  background: #fff; border: none; border-radius: 20px;
-  padding: 14px 16px; text-align: left;
+  width: 100%; display: flex; flex-direction: row; align-items: center;
+  background: #fff; border-radius: 20px;
+  padding: 10px 10px 10px 16px;
   box-shadow: var(--shadow-card);
-  min-height: 44px;
+  min-height: 54px;
+  cursor: default;
 }
+.client-info {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 2px;
+  cursor: pointer;
+  padding: 6px 0;
+  min-height: 44px;
+  justify-content: center;
+}
+.client-source {
+  font-size: 11px;
+  color: #d4a8bc;
+  font-weight: 600;
+  letter-spacing: .02em;
+  margin-top: 1px;
+}
+.client-edit-btn {
+  background: rgba(232,155,180,.10);
+  border: none;
+  border-radius: 12px;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 14px;
+  min-height: 44px;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.client-edit-btn:active { background: rgba(232,155,180,.22); }
 .client-history { padding: 6px 6px 0; }
 .hist-row {
   width: 100%; display: flex; justify-content: space-between; align-items: center;
