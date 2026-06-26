@@ -63,6 +63,7 @@ export default function HomeView({ onOpen, onNew }) {
       <header className="screen-head home-head">
         <div>
           <h1>Главная</h1>
+          <p className="home-greeting">Привет! 💗</p>
           <p className="home-date">{formatDayTitle(new Date().toISOString())}</p>
         </div>
         <button className="home-new-btn" onClick={onNew}>＋ Запись</button>
