@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { listAppointments } from '../db/appointments.js'
+import { getMeta } from '../db/meta.js'
 import { formatTime, formatPrice, toDayKey } from '../lib/format.js'
+import { computeFreeSlots } from '../lib/slots.js'
 
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 const WD = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
@@ -9,8 +11,10 @@ export default function CalendarView({ onOpen }) {
   const [items, setItems] = useState([])
   const [cursor, setCursor] = useState(() => { const d = new Date(); d.setDate(1); return d })
   const [selected, setSelected] = useState(() => toDayKey(new Date()))
+  const [workHours, setWorkHours] = useState({ start: '08:00', end: '22:00' })
 
   useEffect(() => { listAppointments().then(setItems) }, [])
+  useEffect(() => { getMeta('workHours', { start: '08:00', end: '22:00' }).then(setWorkHours) }, [])
 
   const byDay = useMemo(() => {
     const m = {}
@@ -27,6 +31,13 @@ export default function CalendarView({ onOpen }) {
 
   const shift = (delta) => setCursor(new Date(year, month + delta, 1))
   const selectedList = [...(byDay[selected] || [])].sort((a, b) => a.datetime.localeCompare(b.datetime))
+
+  const freeSlots = useMemo(
+    () => computeFreeSlots(selectedList, workHours.start, workHours.end).free,
+    [selectedList, workHours]
+  )
+
+  function fmtSlot(t) { return t.replace(/^0/, '') }
 
   return (
     <div>
@@ -65,6 +76,16 @@ export default function CalendarView({ onOpen }) {
             <span className="appt-price">{formatPrice(a.price)}</span>
           </button>
         ))}
+      </div>
+
+      <div className="cal-free-block">
+        <span className="cal-free-title">🟢 Свободно</span>
+        <span className="cal-free-slots">
+          {freeSlots.length === 0
+            ? 'Весь день занят'
+            : freeSlots.map(s => `${fmtSlot(s.start)}–${fmtSlot(s.end)}`).join(', ')
+          }
+        </span>
       </div>
     </div>
   )
