@@ -9,6 +9,7 @@ function normalize(data) {
     datetime: data.datetime,
     serviceName: data.serviceName ?? '',
     price: Number(data.price) || 0,
+    durationMinutes: Number(data.durationMinutes) || 60,
     note: data.note ?? '',
     photos: data.photos ?? []
   }
@@ -32,6 +33,7 @@ export async function updateAppointment(id, patch) {
   if (!existing) return
   const merged = { ...existing, ...patch, id }
   if ('price' in patch) merged.price = Number(patch.price) || 0
+  if ('durationMinutes' in patch) merged.durationMinutes = Number(patch.durationMinutes) || 60
   await db.put('appointments', merged)
 }
 

@@ -1,6 +1,6 @@
 import { getDB } from '../db/db.js'
 
-const VERSION = 1
+const VERSION = 2
 
 async function blobToBase64(blob) {
   const buffer = await blob.arrayBuffer()
@@ -22,6 +22,7 @@ export async function buildBackup() {
   const services = await db.getAll('services')
   const clients = await db.getAll('clients')
   const rawAppointments = await db.getAll('appointments')
+  const meta = await db.getAll('meta')
 
   const appointments = await Promise.all(rawAppointments.map(async (a) => ({
     ...a,
@@ -31,19 +32,20 @@ export async function buildBackup() {
     })))
   })))
 
-  return { version: VERSION, exportedAt: new Date().toISOString(), services, clients, appointments }
+  return { version: VERSION, exportedAt: new Date().toISOString(), services, clients, appointments, meta }
 }
 
 export async function restoreBackup(data) {
-  if (data.version !== VERSION) {
+  if (![1, 2].includes(data.version)) {
     throw new Error('Несовместимая версия резервной копии')
   }
   const db = await getDB()
-  const tx = db.transaction(['services', 'clients', 'appointments'], 'readwrite')
+  const tx = db.transaction(['services', 'clients', 'appointments', 'meta'], 'readwrite')
   await Promise.all([
     tx.objectStore('services').clear(),
     tx.objectStore('clients').clear(),
-    tx.objectStore('appointments').clear()
+    tx.objectStore('appointments').clear(),
+    tx.objectStore('meta').clear()
   ])
   for (const s of data.services || []) tx.objectStore('services').put(s)
   for (const c of data.clients || []) tx.objectStore('clients').put(c)
@@ -51,5 +53,6 @@ export async function restoreBackup(data) {
     const photos = (a.photos || []).map(p => base64ToBlob(p.data, p.type))
     tx.objectStore('appointments').put({ ...a, photos })
   }
+  for (const m of data.meta || []) tx.objectStore('meta').put(m)
   await tx.done
 }

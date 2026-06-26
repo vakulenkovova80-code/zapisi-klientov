@@ -61,4 +61,20 @@ describe('appointments CRUD', () => {
     await updateAppointment(id, { price: '2500' })
     expect((await getAppointment(id)).price).toBe(2500)
   })
+
+  it('durationMinutes по умолчанию 60', async () => {
+    const id = await addAppointment(base())
+    expect((await getAppointment(id)).durationMinutes).toBe(60)
+  })
+
+  it('durationMinutes сохраняется из переданного значения', async () => {
+    const id = await addAppointment(base({ durationMinutes: 90 }))
+    expect((await getAppointment(id)).durationMinutes).toBe(90)
+  })
+
+  it('updateAppointment приводит строковый durationMinutes к числу', async () => {
+    const id = await addAppointment(base())
+    await updateAppointment(id, { durationMinutes: '120' })
+    expect((await getAppointment(id)).durationMinutes).toBe(120)
+  })
 })

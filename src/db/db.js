@@ -1,7 +1,7 @@
 import { openDB, deleteDB } from 'idb'
 
 const DB_NAME = 'zapisi-klientov'
-const DB_VERSION = 1
+const DB_VERSION = 2
 let dbPromise = null
 
 export function getDB() {
@@ -18,6 +18,9 @@ export function getDB() {
           const store = db.createObjectStore('appointments', { keyPath: 'id' })
           store.createIndex('datetime', 'datetime')
           store.createIndex('clientId', 'clientId')
+        }
+        if (!db.objectStoreNames.contains('meta')) {
+          db.createObjectStore('meta', { keyPath: 'key' })
         }
       }
     })
