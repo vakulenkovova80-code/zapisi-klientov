@@ -63,6 +63,66 @@ export function countInRange(appts, range) {
 }
 
 /**
+ * Группирует клиентов по источнику и возвращает массив [{source, count}],
+ * отсортированный по убыванию count. Пустой source → 'Не указан'.
+ * @param {Array<{source?: string}>} clients
+ * @returns {Array<{source: string, count: number}>}
+ */
+export function sourceStats(clients) {
+  const counts = new Map()
+  for (const c of clients) {
+    const key = c.source && c.source.trim() ? c.source.trim() : 'Не указан'
+    counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  return Array.from(counts.entries())
+    .map(([source, count]) => ({ source, count }))
+    .sort((a, b) => b.count - a.count)
+}
+
+/**
+ * Возвращает клиентов с непустым birthday, чей день рождения (месяц+день)
+ * попадает в ближайшие `days` дней от today (включая today и today+days).
+ * Учитывает переход через конец года.
+ * @param {Array<{birthday?: string}>} clients
+ * @param {number} days
+ * @param {Date} today
+ * @returns {Array}
+ */
+export function upcomingBirthdays(clients, days = 30, today = new Date()) {
+  const result = []
+  // Начало сегодняшнего дня (без времени)
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+  for (const c of clients) {
+    if (!c.birthday) continue
+
+    // Парсим месяц и день из birthday (формат YYYY-MM-DD)
+    const parts = c.birthday.split('-')
+    if (parts.length < 3) continue
+    const month = parseInt(parts[1], 10) - 1  // 0-based
+    const day = parseInt(parts[2], 10)
+
+    // Ближайший ДР в этом году
+    let bdThisYear = new Date(todayStart.getFullYear(), month, day)
+    // Если ДР уже прошёл в этом году (строго раньше сегодня) — берём следующий год
+    if (bdThisYear < todayStart) {
+      bdThisYear = new Date(todayStart.getFullYear() + 1, month, day)
+    }
+
+    // Граница окна включительно: todayStart + days дней
+    const windowEnd = new Date(todayStart)
+    windowEnd.setDate(windowEnd.getDate() + days)
+
+    if (bdThisYear >= todayStart && bdThisYear <= windowEnd) {
+      const daysLeft = Math.round((bdThisYear - todayStart) / (1000 * 60 * 60 * 24))
+      result.push({ ...c, daysLeft })
+    }
+  }
+
+  return result
+}
+
+/**
  * Возвращает { name, count } самой частой услуги или null для пустого массива.
  */
 export function topService(appts) {
