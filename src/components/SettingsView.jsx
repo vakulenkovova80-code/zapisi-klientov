@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { listServices, addService, updateService, deleteService } from '../db/services.js'
 import { buildBackup, restoreBackup } from '../lib/backup.js'
+import { buildTextExport } from '../lib/textexport.js'
+import { listAppointments } from '../db/appointments.js'
 import { getMeta, setMeta } from '../db/meta.js'
 
 export default function SettingsView({ onChanged }) {
@@ -45,6 +47,18 @@ export default function SettingsView({ onChanged }) {
     const a = document.createElement('a')
     a.href = url
     a.download = `kopiya-${new Date().toISOString().slice(0, 10)}.json`
+    document.body.appendChild(a); a.click(); a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
+
+  const exportText = async () => {
+    const appts = await listAppointments()
+    const txt = buildTextExport(appts)
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `zapisi-spisok-${new Date().toISOString().slice(0, 10)}.txt`
     document.body.appendChild(a); a.click(); a.remove()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
@@ -112,6 +126,8 @@ export default function SettingsView({ onChanged }) {
           📂 Загрузить копию
           <input type="file" accept="application/json" onChange={importBackup} hidden />
         </label>
+        <button className="btn-secondary" onClick={exportText}>📄 Скачать список (TXT)</button>
+        <p className="hint">Текстовый список всех записей (дата, имя, услуга, цена) — удобно хранить на компьютере.</p>
       </section>
     </div>
   )
