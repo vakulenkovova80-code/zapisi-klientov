@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { listClients } from '../db/clients.js'
 import { waLink, numbersText } from '../lib/broadcast.js'
 
-export default function BroadcastView({ onClose }) {
+export default function BroadcastView() {
   const [clients, setClients] = useState([])
   const [sourceFilter, setSourceFilter] = useState('Все')
   const [selected, setSelected] = useState(new Set())
@@ -95,11 +95,9 @@ export default function BroadcastView({ onClose }) {
   }
 
   return (
-    <div className="overlay">
-      <header className="overlay-head">
-        <button className="link" onClick={onClose}>Закрыть</button>
-        <h2>Рассылка</h2>
-        <span />
+    <div>
+      <header className="screen-head">
+        <h1>Рассылка</h1>
       </header>
 
       <div className="form">

@@ -33,15 +33,17 @@ button { cursor: pointer; }
 .nav-item {
   background: none; border: none;
   display: flex; flex-direction: column;
-  align-items: center; gap: 3px;
-  font-size: 11px; color: #c5b0b8;
-  padding: 4px 12px;
-  min-height: 44px;
+  align-items: center; gap: 2px;
+  font-size: 10px; color: #c5b0b8;
+  padding: 4px 4px;
+  min-height: 48px;
+  flex: 1;
   letter-spacing: .01em;
   transition: color .15s;
 }
 .nav-item.active { color: var(--accent); }
-.nav-icon { font-size: 22px; }
+.nav-icon { font-size: 20px; line-height: 1; }
+.nav-label { white-space: nowrap; }
 
 /* ── Screen headings ───────────────────────────────────── */
 .screen-head {

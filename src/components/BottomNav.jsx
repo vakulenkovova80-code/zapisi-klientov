@@ -1,8 +1,10 @@
 const TABS = [
-  { key: 'upcoming', label: 'Записи', icon: '📋' },
-  { key: 'calendar', label: 'Календарь', icon: '🗓️' },
-  { key: 'clients', label: 'Клиенты', icon: '👥' },
-  { key: 'settings', label: 'Настройки', icon: '⚙️' }
+  { key: 'home',      label: 'Главная',   icon: '🏠' },
+  { key: 'upcoming',  label: 'Записи',    icon: '📋' },
+  { key: 'calendar',  label: 'Календарь', icon: '🗓️' },
+  { key: 'clients',   label: 'Клиенты',   icon: '👥' },
+  { key: 'broadcast', label: 'Рассылка',  icon: '✉️' },
+  { key: 'settings',  label: 'Настройки', icon: '⚙️' },
 ]
 
 export default function BottomNav({ active, onChange }) {
