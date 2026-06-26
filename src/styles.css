@@ -71,3 +71,11 @@ button { cursor: pointer; }
   width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 .cal-cell.sel .cal-dot { background: #fff; }
 .cal-list { margin-top: 18px; }
+
+.client-block { margin-bottom: 8px; }
+.client-row { width: 100%; display: flex; flex-direction: column; align-items: flex-start;
+  background: #fff; border: none; border-radius: 14px; padding: 12px 14px; text-align: left; }
+.client-history { padding: 6px 6px 0; }
+.hist-row { width: 100%; display: flex; justify-content: space-between;
+  background: #fbf5f7; border: none; border-radius: 10px; padding: 10px 12px; margin: 6px 0;
+  font-size: 14px; text-align: left; }
