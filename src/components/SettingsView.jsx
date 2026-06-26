@@ -30,10 +30,13 @@ export default function SettingsView({ onChanged }) {
   }
 
   const importBackup = async (e) => {
-    const file = e.target.files[0]; if (!file) return
-    if (!confirm('Заменить все текущие данные данными из копии?')) return
+    const input = e.target
+    const file = input.files[0]
+    if (!file) return
+    if (!confirm('Заменить все текущие данные данными из копии?')) { input.value = ''; return }
     const text = await file.text()
     await restoreBackup(JSON.parse(text))
+    input.value = ''
     alert('Копия восстановлена'); reload(); onChanged && onChanged()
   }
 
