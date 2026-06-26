@@ -4,7 +4,13 @@ function toICSDate(iso) {
 }
 
 function escapeText(s) {
-  return String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
+  return String(s || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\n/g, '\\n')
 }
 
 export function buildICS({ title, startISO, durationMinutes = 60, note = '', reminderMinutes = 60 }) {
@@ -30,7 +36,7 @@ export function buildICS({ title, startISO, durationMinutes = 60, note = '', rem
     'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR'
-  ].join('\r\n')
+  ].join('\r\n') + '\r\n'
 }
 
 export function downloadICS(filename, icsString) {
