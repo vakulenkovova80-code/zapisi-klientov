@@ -30,7 +30,10 @@ export default function CalendarView({ onOpen }) {
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
 
   const shift = (delta) => setCursor(new Date(year, month + delta, 1))
-  const selectedList = [...(byDay[selected] || [])].sort((a, b) => a.datetime.localeCompare(b.datetime))
+  const selectedList = useMemo(
+    () => [...(byDay[selected] || [])].sort((a, b) => a.datetime.localeCompare(b.datetime)),
+    [byDay, selected]
+  )
 
   const freeSlots = useMemo(
     () => computeFreeSlots(selectedList, workHours.start, workHours.end).free,
