@@ -46,9 +46,9 @@ export default function UpcomingView({ onOpen, onNew }) {
                 <span className="appt-price">{formatPrice(a.price)}</span>
                 <span
                   className="status-badge"
-                  style={{ background: statusColor(a.status) + '22', color: statusColor(a.status) }}
+                  style={{ background: statusColor(a.status || 'planned') + '22', color: statusColor(a.status || 'planned') }}
                 >
-                  {statusLabel(a.status)}
+                  {statusLabel(a.status || 'planned')}
                 </span>
               </span>
             </button>

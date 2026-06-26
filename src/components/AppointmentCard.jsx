@@ -55,9 +55,9 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
           <div className="card-status-group">
             <span
               className="status-badge"
-              style={{ background: statusColor(a.status) + '22', color: statusColor(a.status) }}
+              style={{ background: statusColor(a.status || 'planned') + '22', color: statusColor(a.status || 'planned') }}
             >
-              {statusLabel(a.status)}
+              {statusLabel(a.status || 'planned')}
             </span>
             <select
               className="card-status-select"
