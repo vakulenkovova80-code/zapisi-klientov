@@ -1,14 +1,34 @@
 import { useEffect, useState } from 'react'
 import { listServices, addService, updateService, deleteService } from '../db/services.js'
 import { buildBackup, restoreBackup } from '../lib/backup.js'
+import { getMeta, setMeta } from '../db/meta.js'
 
 export default function SettingsView({ onChanged }) {
   const [services, setServices] = useState([])
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
+  const [workStart, setWorkStart] = useState('08:00')
+  const [workEnd, setWorkEnd] = useState('22:00')
 
   const reload = () => listServices().then(setServices)
   useEffect(() => { reload() }, [])
+  useEffect(() => {
+    getMeta('workHours', { start: '08:00', end: '22:00' }).then(wh => {
+      setWorkStart(wh.start)
+      setWorkEnd(wh.end)
+    })
+  }, [])
+
+  const onWorkStartChange = (val) => {
+    setWorkStart(val)
+    setMeta('workHours', { start: val, end: workEnd })
+    onChanged && onChanged()
+  }
+  const onWorkEndChange = (val) => {
+    setWorkEnd(val)
+    setMeta('workHours', { start: workStart, end: val })
+    onChanged && onChanged()
+  }
 
   const add = async () => {
     if (!name.trim()) return
@@ -43,6 +63,29 @@ export default function SettingsView({ onChanged }) {
   return (
     <div>
       <header className="screen-head"><h1>Настройки</h1></header>
+
+      <section className="settings-block">
+        <h2 className="day-title">Рабочие часы</h2>
+        <p className="hint">Используется для показа свободного времени в календаре.</p>
+        <div className="work-hours-row">
+          <label className="work-hours-label">
+            Начало
+            <input
+              type="time"
+              value={workStart}
+              onChange={e => onWorkStartChange(e.target.value)}
+            />
+          </label>
+          <label className="work-hours-label">
+            Конец
+            <input
+              type="time"
+              value={workEnd}
+              onChange={e => onWorkEndChange(e.target.value)}
+            />
+          </label>
+        </div>
+      </section>
 
       <section className="settings-block">
         <h2 className="day-title">Услуги и цены</h2>

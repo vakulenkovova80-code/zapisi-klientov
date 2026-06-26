@@ -17,6 +17,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
   const [serviceName, setServiceName] = useState('')
   const [price, setPrice] = useState('')
   const [note, setNote] = useState('')
+  const [durationMinutes, setDurationMinutes] = useState(60)
   const [photos, setPhotos] = useState([])
   const [services, setServices] = useState([])
 
@@ -28,6 +29,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
       setClientName(a.clientName); setContact(a.contact)
       setDatetimeLocal(toLocalInput(a.datetime)); setServiceName(a.serviceName)
       setPrice(String(a.price)); setNote(a.note); setPhotos(a.photos || [])
+      setDurationMinutes(a.durationMinutes ?? 60)
     })
   }, [id])
 
@@ -44,7 +46,9 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
   const buildData = () => ({
     clientName, contact,
     datetime: new Date(datetimeLocal).toISOString(),
-    serviceName, price: Number(price) || 0, note, photos
+    serviceName, price: Number(price) || 0,
+    durationMinutes: Number(durationMinutes) || 60,
+    note, photos
   })
 
   const save = async () => {
@@ -67,7 +71,7 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
     const ics = buildICS({
       title: `${clientName} — ${serviceName}`,
       startISO: new Date(datetimeLocal).toISOString(),
-      durationMinutes: 60, note, reminderMinutes: 60
+      durationMinutes: Number(durationMinutes) || 60, note, reminderMinutes: 60
     })
     downloadICS('zapis.ics', ics)
   }
@@ -98,6 +102,9 @@ export default function AppointmentForm({ id, onSaved, onCancel }) {
         </label>
         <label>Цена, ₽
           <input type="number" inputMode="numeric" value={price} onChange={e => setPrice(e.target.value)} />
+        </label>
+        <label>Длительность, мин
+          <input type="number" inputMode="numeric" value={durationMinutes} onChange={e => setDurationMinutes(e.target.value)} min="1" />
         </label>
         <label>Заметка
           <textarea value={note} onChange={e => setNote(e.target.value)} rows={3} placeholder="Пожелания, аллергии…" />
