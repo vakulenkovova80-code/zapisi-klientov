@@ -1,4 +1,4 @@
 :root { --accent: #c98ba0; --bg: #faf7f8; --text: #2b2b2b; }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: #2b2b2b; }
+body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); }
 .app { max-width: 600px; margin: 0 auto; padding: 16px 16px 88px; }
