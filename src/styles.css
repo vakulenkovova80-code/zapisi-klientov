@@ -299,6 +299,142 @@ button { cursor: pointer; }
   min-height: 44px;
 }
 
+/* ── Broadcast (BroadcastView) ─────────────────────────── */
+.broadcast-select {
+  font-size: 16px;
+  padding: 13px 14px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e89bb4' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+.broadcast-select:focus { border-color: var(--accent); }
+
+.broadcast-section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c5b0b8;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.broadcast-toggle-all {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  min-height: 44px;
+  padding: 8px 0;
+}
+
+.broadcast-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.broadcast-check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 14px;
+  min-height: 44px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  /* override form label uppercase */
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.broadcast-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.broadcast-client-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.broadcast-client-contact {
+  font-size: 13px;
+  color: #c5b0b8;
+  flex-shrink: 0;
+}
+
+.broadcast-wa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.broadcast-wa-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 10px 12px 10px 16px;
+  box-shadow: var(--shadow-card);
+  min-height: 52px;
+}
+.broadcast-wa-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+.broadcast-wa-btn {
+  text-decoration: none;
+  flex-shrink: 0;
+  padding: 10px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.broadcast-no-phone {
+  font-size: 13px;
+  color: #d4a8bc;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.broadcast-actions {
+  display: flex;
+  gap: 10px;
+}
+.broadcast-actions .btn-secondary {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+}
+
+.broadcast-copy-msg {
+  text-align: center;
+  color: var(--accent-dark);
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  padding: 4px 0;
+}
+
 /* ── Settings ──────────────────────────────────────────── */
 .settings-block { margin-bottom: 28px; }
 .svc-row, .svc-add {
