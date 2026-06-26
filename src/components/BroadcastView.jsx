@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { listClients } from '../db/clients.js'
 import { waLink, numbersText } from '../lib/broadcast.js'
 
@@ -68,19 +68,30 @@ export default function BroadcastView({ onClose }) {
     }
   }
 
+  const flashTimer = useRef()
   const flash = (msg) => {
     setCopyMsg(msg)
-    setTimeout(() => setCopyMsg(''), 2500)
+    clearTimeout(flashTimer.current)
+    flashTimer.current = setTimeout(() => setCopyMsg(''), 2500)
   }
+  useEffect(() => () => clearTimeout(flashTimer.current), [])
 
   const copyNumbers = async () => {
-    await navigator.clipboard.writeText(numbersText(selectedClients))
-    flash('Номера скопированы')
+    try {
+      await navigator.clipboard.writeText(numbersText(selectedClients))
+      flash('Номера скопированы')
+    } catch {
+      flash('Не удалось скопировать')
+    }
   }
 
   const copyText = async () => {
-    await navigator.clipboard.writeText(text)
-    flash('Текст скопирован')
+    try {
+      await navigator.clipboard.writeText(text)
+      flash('Текст скопирован')
+    } catch {
+      flash('Не удалось скопировать')
+    }
   }
 
   return (
