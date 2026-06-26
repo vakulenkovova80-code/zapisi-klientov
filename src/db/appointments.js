@@ -1,0 +1,54 @@
+import { getDB } from './db.js'
+
+function normalize(data) {
+  return {
+    clientId: data.clientId ?? null,
+    clientName: data.clientName ?? '',
+    contact: data.contact ?? '',
+    datetime: data.datetime,
+    serviceName: data.serviceName ?? '',
+    price: Number(data.price) || 0,
+    note: data.note ?? '',
+    photos: data.photos ?? []
+  }
+}
+
+export async function addAppointment(data) {
+  const db = await getDB()
+  const id = crypto.randomUUID()
+  await db.put('appointments', { id, ...normalize(data) })
+  return id
+}
+
+export async function getAppointment(id) {
+  const db = await getDB()
+  return db.get('appointments', id)
+}
+
+export async function updateAppointment(id, patch) {
+  const db = await getDB()
+  const existing = await db.get('appointments', id)
+  if (!existing) return
+  await db.put('appointments', { ...existing, ...patch, id })
+}
+
+export async function deleteAppointment(id) {
+  const db = await getDB()
+  await db.delete('appointments', id)
+}
+
+export async function listAppointments() {
+  const db = await getDB()
+  const all = await db.getAllFromIndex('appointments', 'datetime')
+  return all // индекс уже даёт сортировку по datetime
+}
+
+export async function listUpcoming(fromISO) {
+  const all = await listAppointments()
+  return all.filter(a => a.datetime >= fromISO)
+}
+
+export async function listByClient(clientId) {
+  const db = await getDB()
+  return db.getAllFromIndex('appointments', 'clientId', clientId)
+}
