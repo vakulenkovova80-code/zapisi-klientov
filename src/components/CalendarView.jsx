@@ -55,13 +55,14 @@ export default function CalendarView({ onOpen }) {
         {cells.map((d, i) => {
           if (!d) return <div key={i} className="cal-cell empty" />
           const key = toDayKey(d)
-          const has = !!byDay[key]
+          const count = (byDay[key] || []).length
+          const loadClass = count >= 5 ? 'cal-cell--load3' : count >= 3 ? 'cal-cell--load2' : count > 0 ? 'cal-cell--load1' : ''
           return (
             <button key={i}
-              className={`cal-cell ${key === selected ? 'sel' : ''}`}
+              className={`cal-cell${key === selected ? ' sel' : ''}${loadClass ? ' ' + loadClass : ''}`}
               onClick={() => setSelected(key)}>
               {d.getDate()}
-              {has && <span className="cal-dot" />}
+              {count > 0 && <span className="cal-load">{count}</span>}
             </button>
           )
         })}
