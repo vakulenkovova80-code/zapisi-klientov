@@ -35,6 +35,9 @@ export async function buildBackup() {
 }
 
 export async function restoreBackup(data) {
+  if (data.version !== VERSION) {
+    throw new Error('Несовместимая версия резервной копии')
+  }
   const db = await getDB()
   const tx = db.transaction(['services', 'clients', 'appointments'], 'readwrite')
   await Promise.all([

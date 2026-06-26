@@ -43,4 +43,9 @@ describe('backup', () => {
     const list = await listServices()
     expect(list.map(s => s.name)).toEqual(['Новое'])
   })
+
+  it('restoreBackup отклоняет несовместимую версию', async () => {
+    await expect(restoreBackup({ version: 999, services: [], clients: [], appointments: [] }))
+      .rejects.toThrow()
+  })
 })
