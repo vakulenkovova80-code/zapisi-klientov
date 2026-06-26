@@ -58,3 +58,16 @@ button { cursor: pointer; }
 .card-actions .btn-secondary { flex: 1; text-align: center; text-decoration: none; }
 .btn-danger { width: 100%; padding: 14px; border: none; border-radius: 12px;
   background: #fbeaea; color: #c0392b; font-size: 15px; font-weight: 600; margin-top: 10px; }
+
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 12px; }
+.cal-head h1 { font-size: 18px; margin: 0; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-wd { text-align: center; font-size: 11px; color: #aaa; padding-bottom: 4px; }
+.cal-cell { aspect-ratio: 1; border: none; background: #fff; border-radius: 10px;
+  font-size: 15px; position: relative; color: #2b2b2b; }
+.cal-cell.empty { background: transparent; }
+.cal-cell.sel { background: var(--accent); color: #fff; }
+.cal-dot { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.cal-cell.sel .cal-dot { background: #fff; }
+.cal-list { margin-top: 18px; }
