@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listUpcoming } from '../db/appointments.js'
-import { formatTime, formatDayTitle, formatPrice } from '../lib/format.js'
+import { formatTime, formatDayTitle, formatPrice, toDayKey } from '../lib/format.js'
 
 function startOfToday() {
   const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString()
@@ -9,7 +9,7 @@ function startOfToday() {
 function groupByDay(items) {
   const groups = {}
   for (const a of items) {
-    const key = a.datetime.slice(0, 10)
+    const key = toDayKey(a.datetime)
     ;(groups[key] = groups[key] || []).push(a)
   }
   return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))

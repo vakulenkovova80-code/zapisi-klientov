@@ -1,22 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { listAppointments } from '../db/appointments.js'
-import { formatTime, formatPrice } from '../lib/format.js'
+import { formatTime, formatPrice, toDayKey } from '../lib/format.js'
 
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 const WD = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
 
-function ymd(d) { return d.toISOString().slice(0, 10) }
-
 export default function CalendarView({ onOpen }) {
   const [items, setItems] = useState([])
   const [cursor, setCursor] = useState(() => { const d = new Date(); d.setDate(1); return d })
-  const [selected, setSelected] = useState(() => ymd(new Date()))
+  const [selected, setSelected] = useState(() => toDayKey(new Date()))
 
   useEffect(() => { listAppointments().then(setItems) }, [])
 
   const byDay = useMemo(() => {
     const m = {}
-    for (const a of items) { const k = a.datetime.slice(0, 10); (m[k] = m[k] || []).push(a) }
+    for (const a of items) { const k = toDayKey(a.datetime); (m[k] = m[k] || []).push(a) }
     return m
   }, [items])
 
@@ -28,7 +26,7 @@ export default function CalendarView({ onOpen }) {
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
 
   const shift = (delta) => setCursor(new Date(year, month + delta, 1))
-  const selectedList = (byDay[selected] || []).sort((a, b) => a.datetime.localeCompare(b.datetime))
+  const selectedList = [...(byDay[selected] || [])].sort((a, b) => a.datetime.localeCompare(b.datetime))
 
   return (
     <div>
@@ -42,7 +40,7 @@ export default function CalendarView({ onOpen }) {
         {WD.map(w => <div key={w} className="cal-wd">{w}</div>)}
         {cells.map((d, i) => {
           if (!d) return <div key={i} className="cal-cell empty" />
-          const key = ymd(d)
+          const key = toDayKey(d)
           const has = !!byDay[key]
           return (
             <button key={i}
