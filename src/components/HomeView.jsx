@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { listAppointments } from '../db/appointments.js'
 import { listClients } from '../db/clients.js'
 import { getMeta } from '../db/meta.js'
 import {
   sumIncome, countInRange,
   todayRange, weekRange, monthRange,
-  topService
+  topService, sourceStats, upcomingBirthdays
 } from '../lib/stats.js'
 import { computeFreeSlots } from '../lib/slots.js'
 import { formatPrice, formatTime, formatDayTitle, toDayKey } from '../lib/format.js'
 import { statusLabel, statusColor } from '../lib/statuses.js'
+import { reminderText } from '../lib/reminders.js'
+import { birthdayText } from '../lib/messages.js'
+import { waLink } from '../lib/broadcast.js'
 
 export default function HomeView({ onOpen, onNew }) {
   const [appts, setAppts]       = useState(null)
@@ -27,6 +30,20 @@ export default function HomeView({ onOpen, onNew }) {
       setWorkHours(wh)
     })
   }, [])
+
+  // Hooks must be declared before any conditional returns (React rules)
+  const tomorrowAppts = useMemo(() => {
+    if (!appts) return []
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const tomorrowKey = toDayKey(tomorrow)
+    return appts
+      .filter(a => toDayKey(a.datetime) === tomorrowKey)
+      .sort((a, b) => a.datetime.localeCompare(b.datetime))
+  }, [appts])
+
+  const birthdays = useMemo(() => upcomingBirthdays(clients, 30), [clients])
+  const sources   = useMemo(() => sourceStats(clients), [clients])
 
   if (!appts) {
     return (
@@ -102,14 +119,30 @@ export default function HomeView({ onOpen, onNew }) {
         </div>
       </div>
 
-      {/* Топ-услуга */}
-      {top && (
-        <div className="home-top-service">
-          <span className="home-top-icon">⭐</span>
-          <span className="home-top-text">
-            Чаще всего: <strong>{top.name}</strong> ({top.count})
-          </span>
-        </div>
+      {/* 🔔 Напомнить завтра */}
+      {tomorrowAppts.length > 0 && (
+        <>
+          <h2 className="day-title home-section-title">🔔 Напомнить завтра</h2>
+          {tomorrowAppts.map(a => {
+            const link = waLink(a.contact, reminderText(a))
+            return (
+              <div key={a.id} className="home-reminder-row">
+                <span className="home-reminder-time">{formatTime(a.datetime)}</span>
+                <span className="home-reminder-name">{a.clientName}</span>
+                {link && (
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="home-reminder-wa"
+                  >
+                    WhatsApp
+                  </a>
+                )}
+              </div>
+            )
+          })}
+        </>
       )}
 
       {/* Записи сегодня */}
@@ -148,6 +181,62 @@ export default function HomeView({ onOpen, onNew }) {
           }
         </span>
       </div>
+
+      {/* 🎂 Дни рождения (ближайшие 30 дней) */}
+      {birthdays.length > 0 && (
+        <>
+          <h2 className="day-title home-section-title">🎂 Дни рождения</h2>
+          {birthdays.map(client => {
+            const link = waLink(client.contact, birthdayText(client))
+            const daysLabel = client.daysLeft === 0
+              ? 'сегодня!'
+              : client.daysLeft === 1
+                ? 'завтра'
+                : `через ${client.daysLeft} дн.`
+            return (
+              <div key={client.id} className="home-birthday-row">
+                <span className="home-birthday-name">{client.name}</span>
+                <span className="home-birthday-days">{daysLabel}</span>
+                {link && (
+                  <a
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="home-birthday-wa"
+                  >
+                    Поздравить
+                  </a>
+                )}
+              </div>
+            )
+          })}
+        </>
+      )}
+
+      {/* 📊 Откуда приходят */}
+      {sources.length > 0 && (
+        <>
+          <h2 className="day-title home-section-title">📊 Откуда приходят</h2>
+          <div className="home-source-list">
+            {sources.map(({ source, count }) => (
+              <div key={source} className="home-source-row">
+                <span className="home-source-name">{source}</span>
+                <span className="home-source-count">{count}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Топ-услуга */}
+      {top && (
+        <div className="home-top-service">
+          <span className="home-top-icon">⭐</span>
+          <span className="home-top-text">
+            Чаще всего: <strong>{top.name}</strong> ({top.count})
+          </span>
+        </div>
+      )}
 
       <button className="fab" onClick={onNew} aria-label="Новая запись">＋</button>
     </div>
