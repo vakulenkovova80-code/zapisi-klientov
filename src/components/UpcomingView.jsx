@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { listUpcoming } from '../db/appointments.js'
 import { formatTime, formatDayTitle, formatPrice, toDayKey } from '../lib/format.js'
 import { statusLabel, statusColor } from '../lib/statuses.js'
+import { locationIcon } from '../lib/locations.js'
 
 function startOfToday() {
   const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString()
@@ -40,7 +41,7 @@ export default function UpcomingView({ onOpen, onNew }) {
               <span className="appt-time">{formatTime(a.datetime)}</span>
               <span className="appt-main">
                 <span className="appt-name">{a.clientName}</span>
-                <span className="appt-service">{a.serviceName}</span>
+                <span className="appt-service">{a.serviceName} <span className="appt-location-icon">{locationIcon(a.location || 'salon')}</span></span>
               </span>
               <span className="appt-row-right">
                 <span className="appt-price">{formatPrice(a.price)}</span>

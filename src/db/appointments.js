@@ -12,7 +12,8 @@ function normalize(data) {
     durationMinutes: Number(data.durationMinutes) || 60,
     note: data.note ?? '',
     photos: data.photos ?? [],
-    status: data.status || 'planned'
+    status: data.status || 'planned',
+    location: data.location || 'salon'
   }
 }
 

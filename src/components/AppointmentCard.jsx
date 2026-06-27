@@ -5,6 +5,7 @@ import { loyaltyInfo } from '../lib/loyalty.js'
 import { reviewRequestText } from '../lib/messages.js'
 import { formatDayTitle, formatTime, formatPrice } from '../lib/format.js'
 import { STATUSES, statusLabel, statusColor } from '../lib/statuses.js'
+import { locationLabel, locationIcon } from '../lib/locations.js'
 import { reminderText } from '../lib/reminders.js'
 import { waLink } from '../lib/broadcast.js'
 import { drawDiscountCard } from '../lib/discountCard.js'
@@ -132,6 +133,10 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
         <p className="card-when">{formatDayTitle(a.datetime)}, {formatTime(a.datetime)}</p>
         <div className="card-line"><span>Услуга</span><b>{a.serviceName || '—'}</b></div>
         <div className="card-line"><span>Цена</span><b>{formatPrice(a.price)}</b></div>
+        <div className="card-line">
+          <span>Место</span>
+          <b>{locationIcon(a.location || 'salon')} {locationLabel(a.location || 'salon')}</b>
+        </div>
 
         <div className="card-line">
           <span>Статус</span>

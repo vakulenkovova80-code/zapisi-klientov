@@ -4,6 +4,7 @@ import { listServices } from '../db/services.js'
 import { listClients, addClient } from '../db/clients.js'
 import { buildICS, downloadICS } from '../lib/ics.js'
 import { STATUSES } from '../lib/statuses.js'
+import { LOCATIONS } from '../lib/locations.js'
 import { getMeta } from '../db/meta.js'
 import { isWeekend, priceForDate } from '../lib/pricing.js'
 
@@ -25,6 +26,7 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [photos, setPhotos] = useState([])
   const [status, setStatus] = useState('planned')
+  const [location, setLocation] = useState('salon')
   const [services, setServices] = useState([])
   const [weekendSurcharge, setWeekendSurcharge] = useState(20)
 
@@ -39,6 +41,7 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
       setPrice(String(a.price)); setNote(a.note); setPhotos(a.photos || [])
       setDurationMinutes(a.durationMinutes ?? 60)
       setStatus(a.status || 'planned')
+      setLocation(a.location || 'salon')
     })
   }, [id])
 
@@ -57,7 +60,7 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
     datetime: new Date(datetimeLocal).toISOString(),
     serviceName, price: Number(price) || 0,
     durationMinutes: Number(durationMinutes) || 60,
-    note, photos, status
+    note, photos, status, location
   })
 
   const save = async () => {
@@ -130,6 +133,13 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
           <select value={status} onChange={e => setStatus(e.target.value)}>
             {STATUSES.map(s => (
               <option key={s.key} value={s.key}>{s.label}</option>
+            ))}
+          </select>
+        </label>
+        <label>Приём
+          <select value={location} onChange={e => setLocation(e.target.value)}>
+            {LOCATIONS.map(l => (
+              <option key={l.key} value={l.key}>{l.icon} {l.label}</option>
             ))}
           </select>
         </label>

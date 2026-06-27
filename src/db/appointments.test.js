@@ -98,4 +98,25 @@ describe('appointments CRUD', () => {
     expect(a.clientName).toBe('Аня')
     expect(a.note).toBe('важно')
   })
+
+  it('дефолтный location salon', async () => {
+    const id = await addAppointment(base())
+    const a = await getAppointment(id)
+    expect(a.location).toBe('salon')
+  })
+
+  it('сохраняет переданный location', async () => {
+    const id = await addAppointment(base({ location: 'home' }))
+    const a = await getAppointment(id)
+    expect(a.location).toBe('home')
+  })
+
+  it('updateAppointment обновляет location, сохраняя остальные поля', async () => {
+    const id = await addAppointment(base({ note: 'важно' }))
+    await updateAppointment(id, { location: 'home' })
+    const a = await getAppointment(id)
+    expect(a.location).toBe('home')
+    expect(a.clientName).toBe('Аня')
+    expect(a.note).toBe('важно')
+  })
 })
