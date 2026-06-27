@@ -119,7 +119,7 @@ export function upcomingBirthdays(clients, days = 30, today = new Date()) {
     }
   }
 
-  return result
+  return result.sort((a, b) => a.daysLeft - b.daysLeft)
 }
 
 /**
