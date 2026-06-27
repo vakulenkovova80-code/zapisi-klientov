@@ -25,13 +25,15 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
   const photoUrls = useMemo(() => (a?.photos || []).map(p => URL.createObjectURL(p)), [a])
   useEffect(() => () => { photoUrls.forEach(u => URL.revokeObjectURL(u)) }, [photoUrls])
 
-  // Loyalty — load visits count + setting; must be above early return
+  // Loyalty — load visits count + settings; must be above early return
   const [loyalty, setLoyalty] = useState(null)
   useEffect(() => {
     if (!a?.clientId) { setLoyalty(null); return }
     let cancelled = false
-    Promise.all([listByClient(a.clientId), getMeta('loyaltyEvery', 5)])
-      .then(([visits, every]) => { if (!cancelled) setLoyalty(loyaltyInfo(visits.length, every)) })
+    Promise.all([listByClient(a.clientId), getMeta('loyaltyEvery', 5), getMeta('discountPercent', 40)])
+      .then(([visits, every, percent]) => {
+        if (!cancelled) setLoyalty({ ...loyaltyInfo(visits.length, every), percent })
+      })
     return () => { cancelled = true }
   }, [a?.clientId])
 
@@ -68,7 +70,7 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
         {loyalty && (
           <div className="card-loyalty">
             {loyalty.discountNow
-              ? <span className="loyalty-badge loyalty-badge--discount">🎁 Положена скидка!</span>
+              ? <span className="loyalty-badge loyalty-badge--discount">🎁 Скидка {loyalty.percent}%!</span>
               : loyalty.isRegular
                 ? <span className="loyalty-badge loyalty-badge--regular">Постоянный 💖</span>
                 : <span className="loyalty-badge loyalty-badge--progress">До скидки: {loyalty.visitsToDiscount}</span>
@@ -123,15 +125,20 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
             className="btn-secondary"
             onClick={async () => {
               try {
-                const businessName = await getMeta('businessName', 'Kateryna Shtander')
-                const blob = await drawDiscountCard({ clientName: a.clientName, businessName, percent: 10 })
-                await shareOrDownloadCard(blob, 'skidka-10.png')
+                const [businessName, every, percent] = await Promise.all([
+                  getMeta('businessName', 'Kateryna Shtander'),
+                  getMeta('loyaltyEvery', 5),
+                  getMeta('discountPercent', 40),
+                ])
+                const visitCount = loyalty?.count ?? 0
+                const blob = await drawDiscountCard({ clientName: a.clientName, businessName, visitCount, every, percent })
+                await shareOrDownloadCard(blob, 'karta-loyalnosti.png')
               } catch (err) {
-                alert('Не удалось создать карту скидки: ' + err.message)
+                alert('Не удалось создать карту лояльности: ' + err.message)
               }
             }}
           >
-            🎟 Карта скидки 10%
+            🎟 Карта лояльности
           </button>
         </div>
 

@@ -1,5 +1,5 @@
 /**
- * G8 — Скидочная карта клиента
+ * G9 — Накопительная карта лояльности клиента
  * Рисует PNG-карту на offscreen canvas и возвращает Blob.
  */
 
@@ -22,13 +22,13 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 /**
- * Генерирует красивую розовую скидочную карту и возвращает Promise<Blob>.
- * @param {{ clientName: string, businessName: string, percent?: number }} opts
+ * Генерирует накопительную карту лояльности и возвращает Promise<Blob>.
+ * @param {{ clientName: string, businessName: string, visitCount?: number, every?: number, percent?: number }} opts
  * @returns {Promise<Blob>}
  */
-export function drawDiscountCard({ clientName, businessName, percent = 10 }) {
+export function drawDiscountCard({ clientName, businessName, visitCount = 0, every = 5, percent = 40 }) {
   const W = 800
-  const H = 500
+  const H = 560
 
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -60,10 +60,10 @@ export function drawDiscountCard({ clientName, businessName, percent = 10 }) {
 
   // ── Soft decorative circles ──
   ctx.save()
-  ctx.globalAlpha = 0.12
+  ctx.globalAlpha = 0.10
   ctx.fillStyle = '#d6688f'
   ctx.beginPath()
-  ctx.arc(W - 80, 80, 100, 0, Math.PI * 2)
+  ctx.arc(W - 80, 90, 100, 0, Math.PI * 2)
   ctx.fill()
   ctx.beginPath()
   ctx.arc(60, H - 60, 80, 0, Math.PI * 2)
@@ -73,61 +73,128 @@ export function drawDiscountCard({ clientName, businessName, percent = 10 }) {
 
   // ── businessName ──
   ctx.fillStyle = '#d6688f'
-  ctx.font = 'bold 46px -apple-system, system-ui, sans-serif'
+  ctx.font = 'bold 42px -apple-system, system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText(businessName, W / 2, 100)
+  ctx.fillText('🌹 ' + businessName, W / 2, 82)
+
+  // ── «Карта лояльности» ──
+  ctx.fillStyle = '#b84f7a'
+  ctx.font = '600 22px -apple-system, system-ui, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText('Карта лояльности', W / 2, 115)
 
   // ── Divider ──
-  ctx.strokeStyle = 'rgba(214,104,143,0.3)'
+  ctx.strokeStyle = 'rgba(214,104,143,0.30)'
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(60, 122)
-  ctx.lineTo(W - 60, 122)
+  ctx.moveTo(60, 132)
+  ctx.lineTo(W - 60, 132)
   ctx.stroke()
 
-  // ── «СКИДКА» label ──
-  ctx.fillStyle = '#b84f7a'
-  ctx.font = '600 26px -apple-system, system-ui, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText('СКИДКА', W / 2, 185)
+  // ── Stamp circles ──
+  const discountNow = visitCount > 0 && visitCount % every === 0
+  const filledCount = discountNow ? every : visitCount % every
 
-  // ── Big percent ──
-  ctx.fillStyle = '#d6688f'
-  ctx.font = 'bold 130px -apple-system, system-ui, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText(`${percent}%`, W / 2, 310)
+  const maxWidth = W - 120
+  const circleR = Math.min(30, Math.floor(maxWidth / (every * 2.8)))
+  const circleSpacing = Math.max(10, Math.floor(circleR * 0.6))
+  const totalCircleWidth = every * (2 * circleR) + (every - 1) * circleSpacing
+  const startX = (W - totalCircleWidth) / 2 + circleR
+  const circleY = 198
 
-  // ── «на следующую услугу» ──
+  for (let i = 0; i < every; i++) {
+    const cx = startX + i * (2 * circleR + circleSpacing)
+    const filled = i < filledCount
+
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(cx, circleY, circleR, 0, Math.PI * 2)
+    if (filled) {
+      ctx.fillStyle = '#d6688f'
+      ctx.fill()
+      // Checkmark inside
+      ctx.fillStyle = 'white'
+      ctx.font = `bold ${Math.floor(circleR * 0.9)}px -apple-system, system-ui, sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('✓', cx, circleY)
+    } else {
+      ctx.fillStyle = 'rgba(214,104,143,0.10)'
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(214,104,143,0.38)'
+      ctx.lineWidth = 2
+      ctx.stroke()
+    }
+    ctx.restore()
+  }
+  ctx.textBaseline = 'alphabetic'
+
+  // ── «Услуг: N» ──
   ctx.fillStyle = '#9c4d6a'
-  ctx.font = '600 28px -apple-system, system-ui, sans-serif'
+  ctx.font = '500 19px -apple-system, system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText('на следующую услугу', W / 2, 355)
+  ctx.fillText(`Услуг: ${visitCount}`, W / 2, 250)
 
   // ── Divider ──
-  ctx.strokeStyle = 'rgba(214,104,143,0.25)'
+  ctx.strokeStyle = 'rgba(214,104,143,0.20)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(60, 265)
+  ctx.lineTo(W - 60, 265)
+  ctx.stroke()
+
+  // ── Rule ──
+  ctx.fillStyle = '#7a3d58'
+  ctx.font = 'bold 26px -apple-system, system-ui, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(`Каждая ${every}-я услуга — скидка ${percent}%`, W / 2, 308)
+
+  // ── Discount banner or «До скидки осталось» ──
+  if (discountNow) {
+    // Bright pink banner
+    ctx.save()
+    roundRect(ctx, 56, 330, W - 112, 62, 18)
+    ctx.fillStyle = '#e83e8c'
+    ctx.fill()
+    ctx.fillStyle = 'white'
+    ctx.font = 'bold 27px -apple-system, system-ui, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(`🎁 Сейчас скидка ${percent}%!`, W / 2, 361)
+    ctx.textBaseline = 'alphabetic'
+    ctx.restore()
+  } else {
+    const remaining = every - (visitCount % every)
+    ctx.fillStyle = '#b84f7a'
+    ctx.font = '500 22px -apple-system, system-ui, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(`До скидки осталось: ${remaining} услуг(и)`, W / 2, 365)
+  }
+
+  // ── Divider ──
+  ctx.strokeStyle = 'rgba(214,104,143,0.22)'
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(60, 378)
-  ctx.lineTo(W - 60, 378)
+  ctx.moveTo(60, 408)
+  ctx.lineTo(W - 60, 408)
   ctx.stroke()
 
   // ── «Для: clientName» ──
-  const clientLine = `Для: ${clientName}`
   ctx.fillStyle = '#7a3d58'
-  ctx.font = '500 26px -apple-system, system-ui, sans-serif'
+  ctx.font = '500 24px -apple-system, system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText(clientLine, W / 2, 415)
+  ctx.fillText(`Для: ${clientName}`, W / 2, 445)
 
-  // ── Footer: @handle + tip ──
+  // ── Footer ──
   ctx.fillStyle = '#d6688f'
   ctx.font = '600 20px -apple-system, system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText('@kateryna.shtander 💗', W / 2, 452)
+  ctx.fillText('@kateryna.shtander 💗', W / 2, 485)
 
   ctx.fillStyle = '#c5a0b2'
   ctx.font = '400 16px -apple-system, system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText('Покажите это сообщение мастеру', W / 2, 478)
+  ctx.fillText('Покажите это сообщение мастеру', W / 2, 513)
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => {
@@ -151,7 +218,7 @@ export async function shareOrDownloadCard(blob, filename) {
     navigator.canShare({ files: [file] })
   ) {
     try {
-      await navigator.share({ files: [file], title: 'Скидочная карта' })
+      await navigator.share({ files: [file], title: 'Карта лояльности' })
       return
     } catch {
       // Пользователь отменил или share не удался — упадём на скачивание

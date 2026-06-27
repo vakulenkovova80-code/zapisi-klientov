@@ -20,6 +20,7 @@ export default function SettingsView({ onChanged }) {
 
   // Loyalty & promo settings
   const [loyaltyEvery, setLoyaltyEvery] = useState('5')
+  const [discountPercent, setDiscountPercent] = useState('40')
   const [reviewLink, setReviewLink] = useState('')
   const [businessName, setBusinessName] = useState('Kateryna Shtander')
 
@@ -31,6 +32,7 @@ export default function SettingsView({ onChanged }) {
       setWorkEnd(wh.end)
     })
     getMeta('loyaltyEvery', 5).then(v => setLoyaltyEvery(String(v)))
+    getMeta('discountPercent', 40).then(v => setDiscountPercent(String(v)))
     getMeta('reviewLink', '').then(setReviewLink)
     getMeta('businessName', 'Kateryna Shtander').then(setBusinessName)
   }, [])
@@ -50,6 +52,12 @@ export default function SettingsView({ onChanged }) {
     setLoyaltyEvery(val)
     const n = Number(val)
     if (n > 0) { setMeta('loyaltyEvery', n); onChanged && onChanged() }
+  }
+
+  const onDiscountPercentChange = (val) => {
+    setDiscountPercent(val)
+    const n = Number(val)
+    if (n > 0) { setMeta('discountPercent', n); onChanged && onChanged() }
   }
 
   const onReviewLinkChange = (val) => setReviewLink(val)
@@ -171,6 +179,18 @@ export default function SettingsView({ onChanged }) {
             min="1"
             value={loyaltyEvery}
             onChange={e => onLoyaltyEveryChange(e.target.value)}
+          />
+        </label>
+
+        <label className="settings-field">
+          Скидка на каждую N-ю услугу, %
+          <input
+            type="number"
+            inputMode="numeric"
+            min="1"
+            max="100"
+            value={discountPercent}
+            onChange={e => onDiscountPercentChange(e.target.value)}
           />
         </label>
 
