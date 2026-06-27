@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { reviewRequestText, birthdayText, promoTemplates } from './messages.js'
+import { reviewRequestText, birthdayText, promoTemplates, promoTemplatesPL } from './messages.js'
 
 describe('reviewRequestText', () => {
   it('подставляет имя и ссылку', () => {
@@ -71,5 +71,28 @@ describe('promoTemplates', () => {
 
   it('минимум 3 шаблона', () => {
     expect(promoTemplates.length).toBeGreaterThanOrEqual(3)
+  })
+})
+
+describe('promoTemplatesPL', () => {
+  it('jest niepustą tablicą', () => {
+    expect(Array.isArray(promoTemplatesPL)).toBe(true)
+    expect(promoTemplatesPL.length).toBeGreaterThan(0)
+  })
+
+  it('każdy element to niepusty string', () => {
+    for (const t of promoTemplatesPL) {
+      expect(typeof t).toBe('string')
+      expect(t.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('zawiera przynajmniej jeden szablon z @kateryna.shtander', () => {
+    const hasInstagram = promoTemplatesPL.some(t => t.includes('@kateryna.shtander'))
+    expect(hasInstagram).toBe(true)
+  })
+
+  it('minimum 3 szablony', () => {
+    expect(promoTemplatesPL.length).toBeGreaterThanOrEqual(3)
   })
 })

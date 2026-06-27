@@ -5,7 +5,7 @@ import { listServices } from '../db/services.js'
 import { getMeta } from '../db/meta.js'
 import { computeFreeSlots } from '../lib/slots.js'
 import { buildFreeSlotsPost } from '../lib/posts.js'
-import { promoTemplates } from '../lib/messages.js'
+import { promoTemplates, promoTemplatesPL } from '../lib/messages.js'
 import { toDayKey, formatPrice } from '../lib/format.js'
 
 const SUB_TABS = [
@@ -30,9 +30,28 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
+// ── Language Switcher chip UI ─────────────────────────────
+function LangSwitcher({ lang, onChange }) {
+  return (
+    <div className="promo-lang-switcher">
+      {['ru', 'pl'].map(l => (
+        <button
+          key={l}
+          type="button"
+          className={`promo-lang-chip${lang === l ? ' active' : ''}`}
+          onClick={() => onChange(l)}
+        >
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 // ── Free Slots Section ────────────────────────────────────
 function FreeSlotsSection() {
   const [dayOffset, setDayOffset] = useState(0) // 0=today, 1=tomorrow
+  const [lang, setLang] = useState('ru')
   const [postText, setPostText] = useState('')
   const [copyMsg, setCopyMsg] = useState('')
   const timerRef = useRef(null)
@@ -64,12 +83,19 @@ function FreeSlotsSection() {
           : { start: '08:00', end: '22:00' }
 
       const { free } = computeFreeSlots(dayAppts, wh.start, wh.end)
-      const dateLabel = dayOffset === 0 ? 'сегодня' : 'завтра'
+
+      let dateLabel
+      if (lang === 'pl') {
+        dateLabel = dayOffset === 0 ? 'dziś' : 'jutro'
+      } else {
+        dateLabel = dayOffset === 0 ? 'сегодня' : 'завтра'
+      }
+
       const name = businessName || 'Kateryna Shtander'
-      setPostText(buildFreeSlotsPost(free, dateLabel, name))
+      setPostText(buildFreeSlotsPost(free, dateLabel, name, lang))
     })()
     return () => { cancelled = true }
-  }, [dayOffset])
+  }, [dayOffset, lang])
 
   const flash = (msg) => {
     setCopyMsg(msg)
@@ -81,9 +107,9 @@ function FreeSlotsSection() {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(postText)
-      flash('Скопировано!')
+      flash(lang === 'pl' ? 'Skopiowano!' : 'Скопировано!')
     } catch {
-      flash('Не удалось скопировать')
+      flash(lang === 'pl' ? 'Nie udało się skopiować' : 'Не удалось скопировать')
     }
   }
 
@@ -91,10 +117,15 @@ function FreeSlotsSection() {
     try { await navigator.share({ text: postText }) } catch { /* отменено или не поддерживается */ }
   }
 
+  const dayLabels = lang === 'pl'
+    ? ['Dziś', 'Jutro']
+    : ['Сегодня', 'Завтра']
+
   return (
     <div className="promo-section">
+      <LangSwitcher lang={lang} onChange={setLang} />
       <div className="promo-day-switcher">
-        {['Сегодня', 'Завтра'].map((label, i) => (
+        {dayLabels.map((label, i) => (
           <button
             key={i}
             type="button"
@@ -113,11 +144,11 @@ function FreeSlotsSection() {
       />
       <div className="promo-actions">
         <button type="button" className="btn-secondary" onClick={copy}>
-          Скопировать
+          {lang === 'pl' ? 'Kopiuj' : 'Скопировать'}
         </button>
         {typeof navigator !== 'undefined' && navigator.share && (
           <button type="button" className="btn-secondary" onClick={share}>
-            Поделиться
+            {lang === 'pl' ? 'Udostępnij' : 'Поделиться'}
           </button>
         )}
       </div>
@@ -128,6 +159,7 @@ function FreeSlotsSection() {
 
 // ── Promos Section ────────────────────────────────────────
 function PromosSection() {
+  const [lang, setLang] = useState('ru')
   const [msgs, setMsgs] = useState({})
   const timers = useRef({})
 
@@ -135,12 +167,18 @@ function PromosSection() {
     Object.values(timers.current).forEach(clearTimeout)
   }, [])
 
+  // Reset copy messages when switching language
+  const handleLangChange = (l) => {
+    setLang(l)
+    setMsgs({})
+  }
+
   const copy = async (text, idx) => {
     try {
       await navigator.clipboard.writeText(text)
-      setMsgs(p => ({ ...p, [idx]: 'Скопировано!' }))
+      setMsgs(p => ({ ...p, [idx]: lang === 'pl' ? 'Skopiowano!' : 'Скопировано!' }))
     } catch {
-      setMsgs(p => ({ ...p, [idx]: 'Не удалось скопировать' }))
+      setMsgs(p => ({ ...p, [idx]: lang === 'pl' ? 'Nie udało się skopiować' : 'Не удалось скопировать' }))
     }
     clearTimeout(timers.current[idx])
     timers.current[idx] = setTimeout(
@@ -149,9 +187,12 @@ function PromosSection() {
     )
   }
 
+  const templates = lang === 'pl' ? promoTemplatesPL : promoTemplates
+
   return (
     <div className="promo-section">
-      {promoTemplates.map((tmpl, idx) => (
+      <LangSwitcher lang={lang} onChange={handleLangChange} />
+      {templates.map((tmpl, idx) => (
         <div key={idx} className="promo-tmpl-card">
           <p className="promo-tmpl-text">{tmpl}</p>
           <div className="promo-tmpl-row">
@@ -160,7 +201,7 @@ function PromosSection() {
               className="btn-secondary promo-tmpl-copy"
               onClick={() => copy(tmpl, idx)}
             >
-              Скопировать
+              {lang === 'pl' ? 'Kopiuj' : 'Скопировать'}
             </button>
             {msgs[idx] && <span className="promo-flash">{msgs[idx]}</span>}
           </div>

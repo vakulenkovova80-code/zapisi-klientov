@@ -32,3 +32,15 @@ export const promoTemplates = [
   '🎁 Подарочный сертификат на любую услугу — отличный подарок! @kateryna.shtander',
   '💄 Специальное предложение на причёску + макияж. Подробности в директ @kateryna.shtander',
 ]
+
+/**
+ * Готові шаблони промо-акцій для польськомовних клієнтів.
+ * @type {string[]}
+ */
+export const promoTemplatesPL = [
+  '🌸 Zniżka 20% na makijaż do końca tygodnia! Zapisy @kateryna.shtander',
+  '💇‍♀️ Przyprowadź koleżankę — obie dostajecie 15% zniżki!',
+  '✨ Wolne terminy w tym tygodniu — zapisz się!',
+  '🎁 Bon podarunkowy na dowolną usługę — świetny prezent! @kateryna.shtander',
+  '💄 Specjalna oferta na fryzurę + makijaż. Szczegóły w DM @kateryna.shtander',
+]
