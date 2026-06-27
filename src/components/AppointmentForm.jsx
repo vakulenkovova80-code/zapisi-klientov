@@ -61,9 +61,15 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
     if (id) {
       await updateAppointment(id, buildData())
     } else {
-      const clients = await listClients()
-      const existing = clients.find(c => c.name.toLowerCase() === clientName.trim().toLowerCase())
-      const clientId = existing ? existing.id : await addClient({ name: clientName.trim(), contact })
+      let clientId
+      if (!id && prefill?.clientId) {
+        // Повторная запись: используем точный clientId, чтобы не привязаться к тёзке
+        clientId = prefill.clientId
+      } else {
+        const clients = await listClients()
+        const existing = clients.find(c => c.name.toLowerCase() === clientName.trim().toLowerCase())
+        clientId = existing ? existing.id : await addClient({ name: clientName.trim(), contact })
+      }
       await addAppointment({ ...buildData(), clientId })
     }
     onSaved()
