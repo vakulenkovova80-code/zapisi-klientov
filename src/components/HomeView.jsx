@@ -18,16 +18,19 @@ export default function HomeView({ onOpen, onNew }) {
   const [appts, setAppts]       = useState(null)
   const [clients, setClients]   = useState([])
   const [workHours, setWorkHours] = useState({ start: '08:00', end: '22:00' })
+  const [clientLang, setClientLang] = useState('pl')
 
   useEffect(() => {
     Promise.all([
       listAppointments(),
       listClients(),
-      getMeta('workHours', { start: '08:00', end: '22:00' })
-    ]).then(([a, c, wh]) => {
+      getMeta('workHours', { start: '08:00', end: '22:00' }),
+      getMeta('clientLang', 'pl')
+    ]).then(([a, c, wh, lang]) => {
       setAppts(a)
       setClients(c)
       setWorkHours(wh)
+      setClientLang(lang)
     })
   }, [])
 
@@ -124,7 +127,7 @@ export default function HomeView({ onOpen, onNew }) {
         <>
           <h2 className="day-title home-section-title">🔔 Напомнить завтра</h2>
           {tomorrowAppts.map(a => {
-            const link = waLink(a.contact, reminderText(a))
+            const link = waLink(a.contact, reminderText(a, clientLang))
             return (
               <div key={a.id} className="home-reminder-row">
                 <span className="home-reminder-time">{formatTime(a.datetime)}</span>
@@ -187,7 +190,7 @@ export default function HomeView({ onOpen, onNew }) {
         <>
           <h2 className="day-title home-section-title">🎂 Дни рождения</h2>
           {birthdays.map(client => {
-            const link = waLink(client.contact, birthdayText(client))
+            const link = waLink(client.contact, birthdayText(client, clientLang))
             const daysLabel = client.daysLeft === 0
               ? 'сегодня!'
               : client.daysLeft === 1

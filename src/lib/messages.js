@@ -2,9 +2,17 @@
  * Текст запроса отзыва после визита.
  * @param {{ clientName: string }} appt
  * @param {string} reviewLink
+ * @param {'ru'|'pl'} lang
  * @returns {string}
  */
-export function reviewRequestText(appt, reviewLink = '') {
+export function reviewRequestText(appt, reviewLink = '', lang = 'ru') {
+  if (lang === 'pl') {
+    const base = `${appt.clientName}, dziękuję za wizytę! 💕 Będzie mi miło, jeśli zostawisz opinię`
+    if (reviewLink) {
+      return `${base}: ${reviewLink}`
+    }
+    return base
+  }
   const base = `${appt.clientName}, спасибо за визит! 💕 Будем рады вашему отзыву`
   if (reviewLink) {
     return `${base}: ${reviewLink}`
@@ -15,9 +23,13 @@ export function reviewRequestText(appt, reviewLink = '') {
 /**
  * Поздравительный текст с днём рождения.
  * @param {{ name: string }} client
+ * @param {'ru'|'pl'} lang
  * @returns {string}
  */
-export function birthdayText(client) {
+export function birthdayText(client, lang = 'ru') {
+  if (lang === 'pl') {
+    return `${client.name}, wszystkiego najlepszego z okazji urodzin! 🎂 Mam dla Ciebie miły upominek na następną wizytę 💕`
+  }
   return `${client.name}, с днём рождения! 🎂 Дарим вам приятный сюрприз на следующий визит 💕`
 }
 

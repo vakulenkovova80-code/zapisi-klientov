@@ -1190,3 +1190,27 @@ button { cursor: pointer; }
   border-radius: 12px;
   box-shadow: var(--shadow-card);
 }
+
+/* ── Language toggle (Settings — client message lang) ───── */
+.lang-toggle {
+  display: flex;
+  gap: 6px;
+}
+.lang-toggle-btn {
+  min-width: 56px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1.5px solid rgba(232,155,180,.35);
+  border-radius: 22px;
+  background: #fff;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.lang-toggle-btn--active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}

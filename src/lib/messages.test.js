@@ -51,6 +51,51 @@ describe('birthdayText', () => {
   })
 })
 
+describe('reviewRequestText PL', () => {
+  it('zawiera «dziękuję» i imię', () => {
+    const text = reviewRequestText({ clientName: 'Maria' }, '', 'pl')
+    expect(text).toContain('Maria')
+    expect(text).toContain('dziękuję')
+  })
+
+  it('zawiera link jeśli podany', () => {
+    const text = reviewRequestText({ clientName: 'Maria' }, 'https://g.co/r', 'pl')
+    expect(text).toContain('https://g.co/r')
+    expect(text).toContain('opinię')
+  })
+
+  it('bez linku — brak dwukropka na końcu i brak undefined', () => {
+    const text = reviewRequestText({ clientName: 'Anna' }, '', 'pl')
+    expect(text).not.toMatch(/:\s*$/)
+    expect(text).not.toContain('undefined')
+  })
+
+  it('ru pozostaje niezmieniony gdy lang=ru', () => {
+    const text = reviewRequestText({ clientName: 'Аня' }, '', 'ru')
+    expect(text).toContain('спасибо за визит')
+  })
+})
+
+describe('birthdayText PL', () => {
+  it('zawiera imię i «wszystkiego najlepszego»', () => {
+    const text = birthdayText({ name: 'Maria' }, 'pl')
+    expect(text).toContain('Maria')
+    expect(text).toContain('wszystkiego najlepszego')
+  })
+
+  it('zawiera 🎂 i wzmiankę o upominku', () => {
+    const text = birthdayText({ name: 'Anna' }, 'pl')
+    expect(text).toContain('🎂')
+    expect(text).toContain('upominek')
+  })
+
+  it('ru pozostaje niezmieniony gdy lang=ru', () => {
+    const text = birthdayText({ name: 'Лена' }, 'ru')
+    expect(text).toContain('днём рождения')
+    expect(text).toContain('следующий визит')
+  })
+})
+
 describe('promoTemplates', () => {
   it('является непустым массивом', () => {
     expect(Array.isArray(promoTemplates)).toBe(true)

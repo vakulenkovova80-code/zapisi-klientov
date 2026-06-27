@@ -42,6 +42,10 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
   const [reviewLink, setReviewLink] = useState('')
   useEffect(() => { getMeta('reviewLink', '').then(setReviewLink) }, [])
 
+  // Client message language — must be above early return
+  const [clientLang, setClientLang] = useState('pl')
+  useEffect(() => { getMeta('clientLang', 'pl').then(setClientLang) }, [])
+
   // Card preview — must be above early return
   const [cardUrl, setCardUrl] = useState(null)
   const cardBlobRef = useRef(null)
@@ -98,8 +102,8 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
 
   const tel = telHref(a.contact)
   const wa = waHref(a.contact)
-  const reminderLink = waLink(a.contact, reminderText(a))
-  const reviewHref = waLink(a.contact, reviewRequestText(a, reviewLink))
+  const reminderLink = waLink(a.contact, reminderText(a, clientLang))
+  const reviewHref = waLink(a.contact, reviewRequestText(a, reviewLink, clientLang))
 
   const changeStatus = async (newKey) => {
     await updateAppointment(id, { status: newKey })

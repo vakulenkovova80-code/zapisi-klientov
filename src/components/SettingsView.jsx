@@ -24,6 +24,7 @@ export default function SettingsView({ onChanged }) {
   const [reviewLink, setReviewLink] = useState('')
   const [businessName, setBusinessName] = useState('Kateryna Shtander')
   const [weekendSurcharge, setWeekendSurcharge] = useState('20')
+  const [clientLang, setClientLang] = useState('pl')
 
   const reload = () => listServices().then(setServices)
   useEffect(() => { reload() }, [])
@@ -37,6 +38,7 @@ export default function SettingsView({ onChanged }) {
     getMeta('reviewLink', '').then(setReviewLink)
     getMeta('businessName', 'Kateryna Shtander').then(setBusinessName)
     getMeta('weekendSurcharge', 20).then(v => setWeekendSurcharge(String(v)))
+    getMeta('clientLang', 'pl').then(setClientLang)
   }, [])
 
   const onWorkStartChange = (val) => {
@@ -72,6 +74,12 @@ export default function SettingsView({ onChanged }) {
     setWeekendSurcharge(val)
     const n = Number(val)
     if (n >= 0) { setMeta('weekendSurcharge', n); onChanged && onChanged() }
+  }
+
+  const onClientLangChange = (val) => {
+    setClientLang(val)
+    setMeta('clientLang', val)
+    onChanged && onChanged()
   }
 
   const add = async () => {
@@ -236,6 +244,29 @@ export default function SettingsView({ onChanged }) {
           />
         </label>
         <p className="hint">В субботу и воскресенье цена услуги увеличивается на указанный процент. 0 — наценки нет.</p>
+
+        <div className="settings-field">
+          <span>Язык сообщений клиентам</span>
+          <div className="lang-toggle" role="group" aria-label="Язык сообщений">
+            <button
+              type="button"
+              className={`lang-toggle-btn${clientLang === 'pl' ? ' lang-toggle-btn--active' : ''}`}
+              onClick={() => onClientLangChange('pl')}
+              aria-pressed={clientLang === 'pl'}
+            >
+              PL
+            </button>
+            <button
+              type="button"
+              className={`lang-toggle-btn${clientLang === 'ru' ? ' lang-toggle-btn--active' : ''}`}
+              onClick={() => onClientLangChange('ru')}
+              aria-pressed={clientLang === 'ru'}
+            >
+              RU
+            </button>
+          </div>
+        </div>
+        <p className="hint">Язык текстов напоминаний, запросов отзыва и поздравлений с ДР. По умолчанию польский (PL).</p>
       </section>
 
       <section className="settings-block">
