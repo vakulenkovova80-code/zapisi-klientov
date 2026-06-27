@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getAppointment, updateAppointment, deleteAppointment } from '../db/appointments.js'
+import { getAppointment, updateAppointment, deleteAppointment, listByClient } from '../db/appointments.js'
+import { getMeta } from '../db/meta.js'
+import { loyaltyInfo } from '../lib/loyalty.js'
+import { reviewRequestText } from '../lib/messages.js'
 import { formatDayTitle, formatTime, formatPrice } from '../lib/format.js'
 import { STATUSES, statusLabel, statusColor } from '../lib/statuses.js'
 import { reminderText } from '../lib/reminders.js'
@@ -21,11 +24,26 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
   const photoUrls = useMemo(() => (a?.photos || []).map(p => URL.createObjectURL(p)), [a])
   useEffect(() => () => { photoUrls.forEach(u => URL.revokeObjectURL(u)) }, [photoUrls])
 
+  // Loyalty — load visits count + setting; must be above early return
+  const [loyalty, setLoyalty] = useState(null)
+  useEffect(() => {
+    if (!a?.clientId) { setLoyalty(null); return }
+    let cancelled = false
+    Promise.all([listByClient(a.clientId), getMeta('loyaltyEvery', 5)])
+      .then(([visits, every]) => { if (!cancelled) setLoyalty(loyaltyInfo(visits.length, every)) })
+    return () => { cancelled = true }
+  }, [a?.clientId])
+
+  // Review link setting — must be above early return
+  const [reviewLink, setReviewLink] = useState('')
+  useEffect(() => { getMeta('reviewLink', '').then(setReviewLink) }, [])
+
   if (!a) return null
 
   const tel = telHref(a.contact)
   const wa = waHref(a.contact)
   const reminderLink = waLink(a.contact, reminderText(a))
+  const reviewHref = waLink(a.contact, reviewRequestText(a, reviewLink))
 
   const changeStatus = async (newKey) => {
     await updateAppointment(id, { status: newKey })
@@ -46,6 +64,16 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
 
       <div className="card-body">
         <h1 className="card-name">{a.clientName}</h1>
+        {loyalty && (
+          <div className="card-loyalty">
+            {loyalty.discountNow
+              ? <span className="loyalty-badge loyalty-badge--discount">🎁 Положена скидка!</span>
+              : loyalty.isRegular
+                ? <span className="loyalty-badge loyalty-badge--regular">Постоянный 💖</span>
+                : <span className="loyalty-badge loyalty-badge--progress">До скидки: {loyalty.visitsToDiscount}</span>
+            }
+          </div>
+        )}
         <p className="card-when">{formatDayTitle(a.datetime)}, {formatTime(a.datetime)}</p>
         <div className="card-line"><span>Услуга</span><b>{a.serviceName || '—'}</b></div>
         <div className="card-line"><span>Цена</span><b>{formatPrice(a.price)}</b></div>
@@ -85,6 +113,9 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
           {wa && <a className="btn-secondary" href={wa} target="_blank" rel="noreferrer">💬 WhatsApp</a>}
           {reminderLink && (
             <a className="btn-secondary" href={reminderLink} target="_blank" rel="noreferrer">🔔 Напомнить</a>
+          )}
+          {reviewHref && (
+            <a className="btn-secondary" href={reviewHref} target="_blank" rel="noreferrer">🌟 Запросить отзыв</a>
           )}
         </div>
 

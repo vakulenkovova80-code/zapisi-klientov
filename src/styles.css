@@ -224,10 +224,11 @@ button { cursor: pointer; }
   box-shadow: var(--shadow-card);
   line-height: 1.55; color: var(--text);
 }
-.card-actions { display: flex; gap: 10px; margin: 20px 0; }
+.card-loyalty { margin: 4px 0 10px; }
+.card-actions { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
 .card-actions .btn-secondary {
-  flex: 1; text-align: center; text-decoration: none;
-  display: flex; align-items: center; justify-content: center;
+  flex: 1 1 auto; min-width: 120px; text-align: center; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; min-height: 44px;
 }
 .btn-danger {
   width: 100%; padding: 14px; border: none; border-radius: 20px;
