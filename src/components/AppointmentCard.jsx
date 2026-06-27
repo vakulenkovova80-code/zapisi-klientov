@@ -7,6 +7,7 @@ import { formatDayTitle, formatTime, formatPrice } from '../lib/format.js'
 import { STATUSES, statusLabel, statusColor } from '../lib/statuses.js'
 import { reminderText } from '../lib/reminders.js'
 import { waLink } from '../lib/broadcast.js'
+import { drawDiscountCard, shareOrDownloadCard } from '../lib/discountCard.js'
 
 function telHref(contact) {
   return /^[+\d][\d\s\-()]*$/.test(contact) ? `tel:${contact.replace(/[\s\-()]/g, '')}` : null
@@ -117,6 +118,21 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
           {reviewHref && (
             <a className="btn-secondary" href={reviewHref} target="_blank" rel="noreferrer">🌟 Запросить отзыв</a>
           )}
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={async () => {
+              try {
+                const businessName = await getMeta('businessName', 'Kateryna Shtander')
+                const blob = await drawDiscountCard({ clientName: a.clientName, businessName, percent: 10 })
+                await shareOrDownloadCard(blob, 'skidka-10.png')
+              } catch (err) {
+                alert('Не удалось создать карту скидки: ' + err.message)
+              }
+            }}
+          >
+            🎟 Карта скидки 10%
+          </button>
         </div>
 
         <button className="btn-danger" onClick={remove}>Удалить запись</button>
