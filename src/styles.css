@@ -931,6 +931,157 @@ button { cursor: pointer; }
   text-align: right;
 }
 
+/* ── PromoView sub-tabs ─────────────────────────────────── */
+.promo-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: nowrap;
+}
+.promo-tab-chip {
+  flex: 1;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(232,155,180,.12);
+  color: var(--accent-dark);
+  min-height: 44px;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.promo-tab-chip.active {
+  background: linear-gradient(135deg, #f4b8cd, var(--accent));
+  color: #fff;
+}
+.promo-tab-chip:active { opacity: .8; }
+
+/* ── Promo shared section wrapper ───────────────────────── */
+.promo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 16px;
+}
+
+/* ── Free slots day switcher ────────────────────────────── */
+.promo-day-switcher {
+  display: flex;
+  gap: 8px;
+}
+.promo-day-btn {
+  flex: 1;
+  border: none;
+  border-radius: 16px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(232,155,180,.10);
+  color: var(--accent-dark);
+  min-height: 44px;
+  transition: background .15s, color .15s;
+}
+.promo-day-btn.active {
+  background: linear-gradient(135deg, #f4b8cd, var(--accent));
+  color: #fff;
+}
+.promo-day-btn:active { opacity: .8; }
+
+/* ── Free slots textarea ────────────────────────────────── */
+.promo-textarea {
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.55;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.promo-textarea:focus { border-color: var(--accent); }
+
+/* ── Copy/Share action row ──────────────────────────────── */
+.promo-actions {
+  display: flex;
+  gap: 10px;
+}
+.promo-actions .btn-secondary {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ── Promo template cards ───────────────────────────────── */
+.promo-tmpl-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px 16px 12px;
+  box-shadow: var(--shadow-card);
+}
+.promo-tmpl-text {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.promo-tmpl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.promo-tmpl-copy {
+  flex-shrink: 0;
+  font-size: 13px;
+  padding: 8px 18px;
+}
+.promo-flash {
+  font-size: 13px;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+/* ── Price list preview ─────────────────────────────────── */
+.promo-price-preview {
+  background: #fff;
+  border-radius: 18px;
+  padding: 4px 16px;
+  box-shadow: var(--shadow-card);
+}
+.promo-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(232,155,180,.12);
+  min-height: 44px;
+}
+.promo-price-row:last-child { border-bottom: none; }
+.promo-price-name {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+.promo-price-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #7a4a5f;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.promo-make-img {
+  width: 100%;
+  text-align: center;
+}
+
 /* ── Client photo gallery ───────────────────────────────── */
 .client-gallery {
   display: flex;

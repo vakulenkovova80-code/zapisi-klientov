@@ -5,7 +5,7 @@ import HomeView from './components/HomeView.jsx'
 import UpcomingView from './components/UpcomingView.jsx'
 import CalendarView from './components/CalendarView.jsx'
 import ClientsView from './components/ClientsView.jsx'
-import BroadcastView from './components/BroadcastView.jsx'
+import PromoView from './components/PromoView.jsx'
 import SettingsView from './components/SettingsView.jsx'
 import AppointmentForm from './components/AppointmentForm.jsx'
 import AppointmentCard from './components/AppointmentCard.jsx'
@@ -75,7 +75,7 @@ export default function App() {
           onRebook={openRebook}
         />
       )}
-      {tab === 'broadcast' && <BroadcastView key={refresh} />}
+      {tab === 'broadcast' && <PromoView key={refresh} />}
       {tab === 'settings'  && <SettingsView key={refresh} onChanged={reload} />}
 
       {overlay && (overlay.mode === 'new' || overlay.mode === 'edit') && (
