@@ -104,6 +104,7 @@ button { cursor: pointer; }
 .appt-main { display: flex; flex-direction: column; flex: 1; gap: 2px; }
 .appt-name  { font-size: 16px; font-weight: 600; color: var(--text); }
 .appt-service { font-size: 13px; color: #c5b0b8; }
+.appt-location-icon { font-size: 11px; opacity: .75; margin-left: 3px; }
 .appt-price { font-weight: 700; color: #7a4a5f; font-size: 15px; }
 
 /* ── FAB (floating action button) ─────────────────────── */
