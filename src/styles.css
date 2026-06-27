@@ -1114,6 +1114,40 @@ button { cursor: pointer; }
   text-align: center;
 }
 
+/* ── Loyalty card preview modal ─────────────────────────── */
+.card-preview {
+  z-index: 20;
+  background: var(--bg);
+}
+.card-preview-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.card-preview-img {
+  max-width: 100%;
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  display: block;
+}
+.card-preview-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.card-preview-actions .btn-secondary {
+  flex: 1 1 auto;
+  min-width: 120px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
 /* ── Client photo gallery ───────────────────────────────── */
 .client-gallery {
   display: flex;
