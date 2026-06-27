@@ -4,6 +4,8 @@ import { listServices } from '../db/services.js'
 import { listClients, addClient } from '../db/clients.js'
 import { buildICS, downloadICS } from '../lib/ics.js'
 import { STATUSES } from '../lib/statuses.js'
+import { getMeta } from '../db/meta.js'
+import { isWeekend, priceForDate } from '../lib/pricing.js'
 
 function toLocalInput(iso) {
   const d = iso ? new Date(iso) : new Date()
@@ -24,8 +26,10 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
   const [photos, setPhotos] = useState([])
   const [status, setStatus] = useState('planned')
   const [services, setServices] = useState([])
+  const [weekendSurcharge, setWeekendSurcharge] = useState(20)
 
   useEffect(() => { listServices().then(setServices) }, [])
+  useEffect(() => { getMeta('weekendSurcharge', 20).then(v => setWeekendSurcharge(Number(v) || 0)) }, [])
   useEffect(() => {
     if (!id) return
     getAppointment(id).then(a => {
@@ -41,7 +45,7 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
   const onPickService = (name) => {
     setServiceName(name)
     const s = services.find(x => x.name === name)
-    if (s && !price) setPrice(String(s.price))
+    if (s && !price) setPrice(String(priceForDate(s.price, weekendSurcharge, datetimeLocal)))
   }
 
   const onAddPhotos = (e) => {
@@ -104,6 +108,11 @@ export default function AppointmentForm({ id, onSaved, onCancel, prefill }) {
         </label>
         <label>Дата и время
           <input type="datetime-local" value={datetimeLocal} onChange={e => setDatetimeLocal(e.target.value)} />
+          {datetimeLocal && isWeekend(datetimeLocal)
+            ? <span className="hint">Выходной день (+{weekendSurcharge}%)</span>
+            : datetimeLocal
+              ? <span className="hint">Будний день</span>
+              : null}
         </label>
         <label>Услуга
           <input list="services-list" value={serviceName} onChange={e => onPickService(e.target.value)} placeholder="Макияж / Причёска" />

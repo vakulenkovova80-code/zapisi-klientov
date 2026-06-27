@@ -23,6 +23,7 @@ export default function SettingsView({ onChanged }) {
   const [discountPercent, setDiscountPercent] = useState('40')
   const [reviewLink, setReviewLink] = useState('')
   const [businessName, setBusinessName] = useState('Kateryna Shtander')
+  const [weekendSurcharge, setWeekendSurcharge] = useState('20')
 
   const reload = () => listServices().then(setServices)
   useEffect(() => { reload() }, [])
@@ -35,6 +36,7 @@ export default function SettingsView({ onChanged }) {
     getMeta('discountPercent', 40).then(v => setDiscountPercent(String(v)))
     getMeta('reviewLink', '').then(setReviewLink)
     getMeta('businessName', 'Kateryna Shtander').then(setBusinessName)
+    getMeta('weekendSurcharge', 20).then(v => setWeekendSurcharge(String(v)))
   }, [])
 
   const onWorkStartChange = (val) => {
@@ -65,6 +67,12 @@ export default function SettingsView({ onChanged }) {
 
   const onBusinessNameChange = (val) => setBusinessName(val)
   const onBusinessNameBlur = () => { setMeta('businessName', businessName); onChanged && onChanged() }
+
+  const onWeekendSurchargeChange = (val) => {
+    setWeekendSurcharge(val)
+    const n = Number(val)
+    if (n >= 0) { setMeta('weekendSurcharge', n); onChanged && onChanged() }
+  }
 
   const add = async () => {
     if (!name.trim()) return
@@ -215,6 +223,19 @@ export default function SettingsView({ onChanged }) {
             onBlur={onBusinessNameBlur}
           />
         </label>
+
+        <label className="settings-field">
+          Наценка за выходные, %
+          <input
+            type="number"
+            inputMode="numeric"
+            min="0"
+            max="200"
+            value={weekendSurcharge}
+            onChange={e => onWeekendSurchargeChange(e.target.value)}
+          />
+        </label>
+        <p className="hint">В субботу и воскресенье цена услуги увеличивается на указанный процент. 0 — наценки нет.</p>
       </section>
 
       <section className="settings-block">
