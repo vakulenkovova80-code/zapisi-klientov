@@ -54,4 +54,38 @@ describe('clients CRUD', () => {
     expect(c.source).toBe('')
     expect(c.note).toBe('')
   })
+
+  it('addClient сохраняет birthday, tags, referredBy', async () => {
+    const id = await addClient({ name: 'Зоя', contact: '', birthday: '1995-03-15', tags: ['VIP', 'постоянная'], referredBy: 'Аня' })
+    const c = await getClient(id)
+    expect(c.birthday).toBe('1995-03-15')
+    expect(c.tags).toEqual(['VIP', 'постоянная'])
+    expect(c.referredBy).toBe('Аня')
+  })
+
+  it('addClient без birthday/tags/referredBy — дефолты пустые', async () => {
+    const id = await addClient({ name: 'Рита', contact: '' })
+    const c = await getClient(id)
+    expect(c.birthday).toBe('')
+    expect(c.tags).toEqual([])
+    expect(c.referredBy).toBe('')
+  })
+
+  it('updateClient сохраняет birthday, tags, referredBy', async () => {
+    const id = await addClient({ name: 'Ника', contact: '' })
+    await updateClient(id, { name: 'Ника', contact: '', birthday: '2000-07-20', tags: ['новая'], referredBy: 'Оля' })
+    const c = await getClient(id)
+    expect(c.birthday).toBe('2000-07-20')
+    expect(c.tags).toEqual(['новая'])
+    expect(c.referredBy).toBe('Оля')
+  })
+
+  it('updateClient без birthday/tags/referredBy — дефолты пустые', async () => {
+    const id = await addClient({ name: 'Вера', contact: '', birthday: '1990-01-01', tags: ['old'], referredBy: 'кто-то' })
+    await updateClient(id, { name: 'Вера', contact: '' })
+    const c = await getClient(id)
+    expect(c.birthday).toBe('')
+    expect(c.tags).toEqual([])
+    expect(c.referredBy).toBe('')
+  })
 })

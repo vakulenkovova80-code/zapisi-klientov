@@ -3,7 +3,7 @@ const TABS = [
   { key: 'upcoming',  label: 'Записи',    icon: '📋' },
   { key: 'calendar',  label: 'Календарь', icon: '🗓️' },
   { key: 'clients',   label: 'Клиенты',   icon: '👥' },
-  { key: 'broadcast', label: 'Рассылка',  icon: '✉️' },
+  { key: 'broadcast', label: 'Продвижение', icon: '📣' },
   { key: 'settings',  label: 'Настройки', icon: '⚙️' },
 ]
 

@@ -11,16 +11,16 @@ export async function getClient(id) {
   return db.get('clients', id)
 }
 
-export async function addClient({ name, contact = '', source = '', note = '' }) {
+export async function addClient({ name, contact = '', source = '', note = '', birthday = '', tags = [], referredBy = '' }) {
   const db = await getDB()
   const id = crypto.randomUUID()
-  await db.put('clients', { id, name, contact, source, note })
+  await db.put('clients', { id, name, contact, source, note, birthday, tags, referredBy })
   return id
 }
 
-export async function updateClient(id, { name, contact = '', source = '', note = '' }) {
+export async function updateClient(id, { name, contact = '', source = '', note = '', birthday = '', tags = [], referredBy = '' }) {
   const db = await getDB()
-  await db.put('clients', { id, name, contact, source, note })
+  await db.put('clients', { id, name, contact, source, note, birthday, tags, referredBy })
 }
 
 export async function deleteClient(id) {

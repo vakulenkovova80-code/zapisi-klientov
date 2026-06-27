@@ -224,10 +224,11 @@ button { cursor: pointer; }
   box-shadow: var(--shadow-card);
   line-height: 1.55; color: var(--text);
 }
-.card-actions { display: flex; gap: 10px; margin: 20px 0; }
+.card-loyalty { margin: 4px 0 10px; }
+.card-actions { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
 .card-actions .btn-secondary {
-  flex: 1; text-align: center; text-decoration: none;
-  display: flex; align-items: center; justify-content: center;
+  flex: 1 1 auto; min-width: 120px; text-align: center; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; min-height: 44px;
 }
 .btn-danger {
   width: 100%; padding: 14px; border: none; border-radius: 20px;
@@ -723,3 +724,408 @@ button { cursor: pointer; }
   transition: border-color .15s;
 }
 .work-hours-label input[type="time"]:focus { border-color: var(--accent); }
+
+/* ── Settings fields (single-column text/number inputs) ── */
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: #c5b0b8;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.settings-field input {
+  font-size: 16px;
+  padding: 13px 14px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  min-height: 44px;
+  transition: border-color .15s;
+}
+.settings-field input:focus { border-color: var(--accent); }
+
+/* ── Import list (mass create appointments) ─────────────── */
+.import-textarea {
+  display: block;
+  width: 100%;
+  min-height: 130px;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .15s;
+  margin-bottom: 12px;
+}
+.import-textarea:focus { border-color: var(--accent); }
+.import-btn { display: block; width: 100%; text-align: center; }
+.import-example {
+  display: inline-block;
+  background: rgba(232,155,180,.12);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: var(--accent-dark);
+  font-family: ui-monospace, monospace;
+  word-break: break-all;
+}
+
+/* ── Tag chips ──────────────────────────────────────────── */
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.tag-chip {
+  background: rgba(232,155,180,.15);
+  color: var(--accent-dark);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Loyalty badge ──────────────────────────────────────── */
+.loyalty-badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.loyalty-badge--regular {
+  background: rgba(232,155,180,.18);
+  color: var(--accent-dark);
+}
+.loyalty-badge--discount {
+  background: #fff3cd;
+  color: #856404;
+}
+.loyalty-badge--progress {
+  background: rgba(232,155,180,.08);
+  color: #b0a0a8;
+}
+
+/* ── Client detail extras ───────────────────────────────── */
+.client-detail-row {
+  padding: 6px 4px 4px;
+}
+.client-birthday {
+  font-size: 13px;
+  color: #c5b0b8;
+  margin: 4px 4px 2px;
+  padding: 0 4px;
+}
+
+/* ── Rebook button ──────────────────────────────────────── */
+.rebook-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f4b8cd, var(--accent));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  margin: 8px 0 4px;
+  min-height: 44px;
+  transition: opacity .15s, transform .1s;
+}
+.rebook-btn:active { opacity: .8; transform: scale(.98); }
+
+/* ── Home: «Напомнить завтра» rows ─────────────────────── */
+.home-reminder-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-card);
+  min-height: 52px;
+}
+.home-reminder-time {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  min-width: 48px;
+  flex-shrink: 0;
+}
+.home-reminder-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.home-reminder-wa {
+  text-decoration: none;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: rgba(232,155,180,.12);
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.home-reminder-wa:active { background: rgba(232,155,180,.22); }
+
+/* ── Home: «Дни рождения» rows ──────────────────────────── */
+.home-birthday-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-card);
+  min-height: 52px;
+}
+.home-birthday-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.home-birthday-days {
+  font-size: 13px;
+  color: #c5b0b8;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.home-birthday-wa {
+  text-decoration: none;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: rgba(232,155,180,.12);
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.home-birthday-wa:active { background: rgba(232,155,180,.22); }
+
+/* ── Home: «Откуда приходят» analytics ──────────────────── */
+.home-source-list {
+  background: #fff;
+  border-radius: 18px;
+  padding: 4px 16px;
+  box-shadow: var(--shadow-card);
+}
+.home-source-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(232,155,180,.12);
+  min-height: 44px;
+}
+.home-source-row:last-child { border-bottom: none; }
+.home-source-name {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+.home-source-count {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--accent-dark);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* ── PromoView sub-tabs ─────────────────────────────────── */
+.promo-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: nowrap;
+}
+.promo-tab-chip {
+  flex: 1;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(232,155,180,.12);
+  color: var(--accent-dark);
+  min-height: 44px;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.promo-tab-chip.active {
+  background: linear-gradient(135deg, #f4b8cd, var(--accent));
+  color: #fff;
+}
+.promo-tab-chip:active { opacity: .8; }
+
+/* ── Promo shared section wrapper ───────────────────────── */
+.promo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 16px;
+}
+
+/* ── Free slots day switcher ────────────────────────────── */
+.promo-day-switcher {
+  display: flex;
+  gap: 8px;
+}
+.promo-day-btn {
+  flex: 1;
+  border: none;
+  border-radius: 16px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(232,155,180,.10);
+  color: var(--accent-dark);
+  min-height: 44px;
+  transition: background .15s, color .15s;
+}
+.promo-day-btn.active {
+  background: linear-gradient(135deg, #f4b8cd, var(--accent));
+  color: #fff;
+}
+.promo-day-btn:active { opacity: .8; }
+
+/* ── Free slots textarea ────────────────────────────────── */
+.promo-textarea {
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.55;
+  padding: 14px 16px;
+  border: 1.5px solid rgba(232,155,180,.28);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.promo-textarea:focus { border-color: var(--accent); }
+
+/* ── Copy/Share action row ──────────────────────────────── */
+.promo-actions {
+  display: flex;
+  gap: 10px;
+}
+.promo-actions .btn-secondary {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ── Promo template cards ───────────────────────────────── */
+.promo-tmpl-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px 16px 12px;
+  box-shadow: var(--shadow-card);
+}
+.promo-tmpl-text {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.promo-tmpl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.promo-tmpl-copy {
+  flex-shrink: 0;
+  font-size: 13px;
+  padding: 8px 18px;
+}
+.promo-flash {
+  font-size: 13px;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+/* ── Price list preview ─────────────────────────────────── */
+.promo-price-preview {
+  background: #fff;
+  border-radius: 18px;
+  padding: 4px 16px;
+  box-shadow: var(--shadow-card);
+}
+.promo-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(232,155,180,.12);
+  min-height: 44px;
+}
+.promo-price-row:last-child { border-bottom: none; }
+.promo-price-name {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 500;
+}
+.promo-price-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #7a4a5f;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.promo-make-img {
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Client photo gallery ───────────────────────────────── */
+.client-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 4px;
+  padding: 0 4px;
+}
+.client-gallery-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}

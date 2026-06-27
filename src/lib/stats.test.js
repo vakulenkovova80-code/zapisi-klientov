@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { todayRange, weekRange, monthRange, sumIncome, countInRange, topService } from './stats.js'
+import { todayRange, weekRange, monthRange, sumIncome, countInRange, topService, sourceStats, upcomingBirthdays } from './stats.js'
 
 // --- Вспомогалки для тестов ---
 function appt(datetime, price, status, serviceName = 'Макияж') {
@@ -149,5 +149,120 @@ describe('topService', () => {
 
   it('пустой массив → null', () => {
     expect(topService([])).toBeNull()
+  })
+})
+
+describe('sourceStats', () => {
+  it('группирует клиентов по источнику и сортирует по убыванию', () => {
+    const clients = [
+      { source: 'Instagram' },
+      { source: 'Instagram' },
+      { source: 'Instagram' },
+      { source: 'TikTok' },
+      { source: 'TikTok' },
+      { source: 'Подруга' },
+    ]
+    const result = sourceStats(clients)
+    expect(result[0]).toEqual({ source: 'Instagram', count: 3 })
+    expect(result[1]).toEqual({ source: 'TikTok', count: 2 })
+    expect(result[2]).toEqual({ source: 'Подруга', count: 1 })
+  })
+
+  it('пустой source → «Не указан»', () => {
+    const clients = [
+      { source: '' },
+      { source: '' },
+      { source: 'Instagram' },
+    ]
+    const result = sourceStats(clients)
+    const notSet = result.find(r => r.source === 'Не указан')
+    expect(notSet).toBeDefined()
+    expect(notSet.count).toBe(2)
+  })
+
+  it('пустой список → пустой массив', () => {
+    expect(sourceStats([])).toEqual([])
+  })
+
+  it('один источник → один элемент', () => {
+    const clients = [{ source: 'ВКонтакте' }, { source: 'ВКонтакте' }]
+    const result = sourceStats(clients)
+    expect(result).toHaveLength(1)
+    expect(result[0]).toEqual({ source: 'ВКонтакте', count: 2 })
+  })
+
+  it('сортировка: наибольший count — первый', () => {
+    const clients = [
+      { source: 'A' },
+      { source: 'B' }, { source: 'B' }, { source: 'B' },
+      { source: 'C' }, { source: 'C' },
+    ]
+    const result = sourceStats(clients)
+    expect(result[0].count).toBeGreaterThanOrEqual(result[1].count)
+    expect(result[1].count).toBeGreaterThanOrEqual(result[2].count)
+  })
+})
+
+describe('upcomingBirthdays', () => {
+  // today = 2026-06-26
+  const TODAY = new Date('2026-06-26T00:00:00')
+
+  it('включает клиента с ДР в ближайшие 30 дней', () => {
+    const clients = [
+      { name: 'Аня', birthday: '1990-07-10' },  // через 14 дней
+    ]
+    const result = upcomingBirthdays(clients, 30, TODAY)
+    expect(result.map(c => c.name)).toContain('Аня')
+  })
+
+  it('исключает клиента с ДР вне окна', () => {
+    const clients = [
+      { name: 'Оля', birthday: '1985-09-01' },  // через ~67 дней — вне окна
+    ]
+    const result = upcomingBirthdays(clients, 30, TODAY)
+    expect(result.map(c => c.name)).not.toContain('Оля')
+  })
+
+  it('исключает клиента с пустым birthday', () => {
+    const clients = [
+      { name: 'Катя', birthday: '' },
+      { name: 'Маша', birthday: '1995-07-05' },
+    ]
+    const result = upcomingBirthdays(clients, 30, TODAY)
+    expect(result.map(c => c.name)).not.toContain('Катя')
+    expect(result.map(c => c.name)).toContain('Маша')
+  })
+
+  it('корректно обрабатывает переход через конец года (декабрь→январь)', () => {
+    // today = 20 декабря
+    const dec20 = new Date('2026-12-20T00:00:00')
+    const clients = [
+      { name: 'Зоя', birthday: '1990-01-05' },   // через 16 дней — в окне 30 дней
+      { name: 'Рита', birthday: '1988-02-01' },   // через 43 дня — вне окна
+    ]
+    const result = upcomingBirthdays(clients, 30, dec20)
+    expect(result.map(c => c.name)).toContain('Зоя')
+    expect(result.map(c => c.name)).not.toContain('Рита')
+  })
+
+  it('ДР точно сегодня — включается', () => {
+    const clients = [
+      { name: 'Вера', birthday: '2000-06-26' },
+    ]
+    const result = upcomingBirthdays(clients, 30, TODAY)
+    expect(result.map(c => c.name)).toContain('Вера')
+  })
+
+  it('ДР ровно на день days — включается (граница)', () => {
+    // today = 26 июня, days=30 → 26 июля включается
+    const clients = [
+      { name: 'Нина', birthday: '1995-07-26' },
+    ]
+    const result = upcomingBirthdays(clients, 30, TODAY)
+    expect(result.map(c => c.name)).toContain('Нина')
+  })
+
+  it('пустой список → пустой массив', () => {
+    expect(upcomingBirthdays([], 30, TODAY)).toEqual([])
   })
 })
