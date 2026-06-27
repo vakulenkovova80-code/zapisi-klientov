@@ -4,6 +4,7 @@ import { listByClient } from '../db/appointments.js'
 import { getMeta } from '../db/meta.js'
 import { loyaltyInfo } from '../lib/loyalty.js'
 import { formatDate, formatPrice } from '../lib/format.js'
+import LoyaltyCardButton from './LoyaltyCardButton.jsx'
 
 const BIRTH_MONTHS = [
   'января','февраля','марта','апреля','мая','июня',
@@ -148,6 +149,13 @@ export default function ClientsView({ onOpen, onAddClient, onEditClient, onReboo
                   🔁 Записать снова
                 </button>
               )}
+
+              {/* Loyalty card button */}
+              <LoyaltyCardButton
+                clientName={openClient.name}
+                visitCount={history.length}
+                className="btn-secondary"
+              />
 
               {/* Photo gallery */}
               {photoUrls.length > 0 && (

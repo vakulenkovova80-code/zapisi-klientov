@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getAppointment, updateAppointment, deleteAppointment, listByClient } from '../db/appointments.js'
 import { getMeta } from '../db/meta.js'
 import { loyaltyInfo } from '../lib/loyalty.js'
@@ -8,7 +8,7 @@ import { STATUSES, statusLabel, statusColor } from '../lib/statuses.js'
 import { locationLabel, locationIcon } from '../lib/locations.js'
 import { reminderText } from '../lib/reminders.js'
 import { waLink } from '../lib/broadcast.js'
-import { drawDiscountCard } from '../lib/discountCard.js'
+import LoyaltyCardButton from './LoyaltyCardButton.jsx'
 
 function telHref(contact) {
   return /^[+\d][\d\s\-()]*$/.test(contact) ? `tel:${contact.replace(/[\s\-()]/g, '')}` : null
@@ -46,59 +46,7 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
   const [clientLang, setClientLang] = useState('pl')
   useEffect(() => { getMeta('clientLang', 'pl').then(setClientLang) }, [])
 
-  // Card preview — must be above early return
-  const [cardUrl, setCardUrl] = useState(null)
-  const cardBlobRef = useRef(null)
-  useEffect(() => {
-    const url = cardUrl
-    return () => { if (url) URL.revokeObjectURL(url) }
-  }, [cardUrl])
-
   if (!a) return null
-
-  const canShareFiles = (() => {
-    if (typeof navigator === 'undefined' || !navigator.canShare) return false
-    try { return navigator.canShare({ files: [new File([], 'x.png', { type: 'image/png' })] }) }
-    catch { return false }
-  })()
-
-  const handleCardOpen = async () => {
-    try {
-      const [businessName, every, percent] = await Promise.all([
-        getMeta('businessName', 'Kateryna Shtander'),
-        getMeta('loyaltyEvery', 5),
-        getMeta('discountPercent', 40),
-      ])
-      const visitCount = loyalty?.count ?? 0
-      const blob = await drawDiscountCard({ clientName: a.clientName, businessName, visitCount, every, percent })
-      cardBlobRef.current = blob
-      setCardUrl(URL.createObjectURL(blob))
-    } catch (err) {
-      alert('Не удалось создать карту лояльности: ' + err.message)
-    }
-  }
-
-  const handleCardShare = async () => {
-    if (!cardBlobRef.current) return
-    const file = new File([cardBlobRef.current], 'karta-loyalnosti.png', { type: 'image/png' })
-    try { await navigator.share({ files: [file], title: 'Карта лояльности' }) }
-    catch { /* пользователь отменил */ }
-  }
-
-  const handleCardSave = () => {
-    if (!cardUrl) return
-    const link = document.createElement('a')
-    link.href = cardUrl
-    link.download = 'karta-loyalnosti.png'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  const handleCardClose = () => {
-    cardBlobRef.current = null
-    setCardUrl(null)
-  }
 
   const tel = telHref(a.contact)
   const wa = waHref(a.contact)
@@ -181,39 +129,15 @@ export default function AppointmentCard({ id, onEdit, onDeleted, onClose }) {
           {reviewHref && (
             <a className="btn-secondary" href={reviewHref} target="_blank" rel="noreferrer">🌟 Запросить отзыв</a>
           )}
-          <button type="button" className="btn-secondary" onClick={handleCardOpen}>
-            🎟 Карта лояльности
-          </button>
+          <LoyaltyCardButton
+            clientName={a.clientName}
+            visitCount={loyalty?.count ?? 0}
+            className="btn-secondary"
+          />
         </div>
 
         <button className="btn-danger" onClick={remove}>Удалить запись</button>
       </div>
-
-      {cardUrl && (
-        <div className="overlay card-preview">
-          <header className="overlay-head">
-            <button className="link" onClick={handleCardClose}>Закрыть</button>
-            <h2>Карта лояльности</h2>
-            <span />
-          </header>
-          <div className="card-preview-body">
-            <img className="card-preview-img" src={cardUrl} alt="Карта лояльности" />
-            <div className="card-preview-actions">
-              {canShareFiles && (
-                <button type="button" className="btn-secondary" onClick={handleCardShare}>
-                  📤 Поделиться
-                </button>
-              )}
-              <button type="button" className="btn-secondary" onClick={handleCardSave}>
-                💾 Сохранить
-              </button>
-              <button type="button" className="btn-secondary" onClick={handleCardClose}>
-                Закрыть
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
