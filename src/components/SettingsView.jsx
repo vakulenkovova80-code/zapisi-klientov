@@ -4,7 +4,9 @@ import { buildBackup, restoreBackup } from '../lib/backup.js'
 import { buildTextExport } from '../lib/textexport.js'
 import { fetchSeed, seedImport } from '../lib/seed.js'
 import { listAppointments } from '../db/appointments.js'
+import { addAppointment } from '../db/appointments.js'
 import { getMeta, setMeta } from '../db/meta.js'
+import { parseImportText } from '../lib/parseImport.js'
 
 export default function SettingsView({ onChanged }) {
   const [services, setServices] = useState([])
@@ -12,6 +14,9 @@ export default function SettingsView({ onChanged }) {
   const [price, setPrice] = useState('')
   const [workStart, setWorkStart] = useState('08:00')
   const [workEnd, setWorkEnd] = useState('22:00')
+
+  // Import list state
+  const [importText, setImportText] = useState('')
 
   // Loyalty & promo settings
   const [loyaltyEvery, setLoyaltyEvery] = useState('5')
@@ -105,6 +110,26 @@ export default function SettingsView({ onChanged }) {
     await restoreBackup(JSON.parse(text))
     input.value = ''
     alert('Копия восстановлена'); reload(); onChanged && onChanged()
+  }
+
+  const handleImport = async () => {
+    const { appointments, errors } = parseImportText(importText)
+    if (appointments.length === 0) {
+      alert(
+        errors.length > 0
+          ? `Не удалось распознать ни одной записи.\n\nОшибки:\n${errors.join('\n')}\n\nПроверьте формат: ДД.ММ.ГГГГ ЧЧ:ММ | Имя | Услуга | Цена`
+          : 'Нет записей для импорта.\n\nФормат: ДД.ММ.ГГГГ ЧЧ:ММ | Имя | Услуга | Цена'
+      )
+      return
+    }
+    const confirmed = confirm(`Создать ${appointments.length} запис${appointments.length === 1 ? 'ь' : appointments.length < 5 ? 'и' : 'ей'}?`)
+    if (!confirmed) return
+    for (const appt of appointments) {
+      await addAppointment(appt)
+    }
+    alert(`Создано ${appointments.length}. Ошибок: ${errors.length}${errors.length > 0 ? '\n\n' + errors.join('\n') : ''}`)
+    setImportText('')
+    onChanged && onChanged()
   }
 
   return (
@@ -205,6 +230,28 @@ export default function SettingsView({ onChanged }) {
         <h2 className="day-title">Стартовые записи</h2>
         <p className="hint">Загрузить заранее подготовленные записи (из вашего списка). Уже добавленные записи не пострадают.</p>
         <button className="btn-secondary" onClick={loadSeed}>📥 Загрузить записи</button>
+      </section>
+
+      <section className="settings-block">
+        <h2 className="day-title">Импорт списком</h2>
+        <p className="hint">
+          Каждая запись с новой строки:<br />
+          <code className="import-example">ДД.ММ.ГГГГ ЧЧ:ММ | Имя | Услуга | Цена</code><br />
+          Услуга и цена — по желанию.
+        </p>
+        <p className="hint">Пример:<br />
+          <code className="import-example">27.06.2026 14:00 | Ольга | Окрашивание | 1500</code>
+        </p>
+        <textarea
+          className="import-textarea"
+          value={importText}
+          onChange={e => setImportText(e.target.value)}
+          placeholder={'27.06.2026 14:00 | Ольга | Окрашивание | 1500\n28.06.2026 10:00 | Марина | Маникюр'}
+          rows={6}
+        />
+        <button className="btn-secondary import-btn" onClick={handleImport}>
+          📥 Импортировать
+        </button>
       </section>
     </div>
   )
